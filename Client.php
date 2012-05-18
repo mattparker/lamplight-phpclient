@@ -11,7 +11,7 @@
  * @package    Lamplight_Client
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.11 Adds returnShortData() and returnFullData() methods for some people/orgs
  */
 
 require_once('Zend/Http/Client.php'); 
@@ -30,7 +30,7 @@ require_once('Zend/Http/Client.php');
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.11 Adds returnShortData() and returnFullData() methods for some people/org
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  */
@@ -228,6 +228,27 @@ class Lamplight_Client extends Zend_Http_Client{
      return $this;
    }
 
+
+   /**
+    * Requests summary data (on some or all requests for 
+    * orgs or people
+    * @return Lamplight_Client    Fluent interface
+    */
+   public function returnShortData () {
+        $this->setParameterGet('return', 'short');
+        return $this;
+   }
+
+
+   /**
+    * Requests all publishable data (on some or all requests for 
+    * orgs or people.  Response body will be bigger and slower!
+    * @return Lamplight_Client    Fluent interface
+    */
+   public function returnFullData () {
+       $this->setParameterGet('return', 'full');
+       return $this;
+   }
 
 
 
