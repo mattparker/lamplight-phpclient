@@ -11,7 +11,8 @@
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Update for add profile functionality
  */
 
 
@@ -27,7 +28,8 @@
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Update for add profile functionality, and better handling of fetchOne() requests
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  */
@@ -132,16 +134,25 @@ class Lamplight_RecordSet implements Iterator {
          $recordClass = self::_buildRecordClassName($action, $method);
        }
        require_once str_replace('_', '/', $recordClass) . '.php';
-       
+
        $data = self::_parseResponseBody($resp->getBody(), $format);
-       
+
        if ($data === false) {
          $errors = true;
        } elseif (is_object($data) && property_exists($data, 'data')) {
-         foreach($data->data as $rec) {
-           $newRec = new $recordClass($rec);
-           $records[$newRec->get('id')] = $newRec;
-         }
+
+           if (is_object($data->data)) {
+               $data->data = array($data->data);
+           }
+
+           if (is_array($data->data)) {
+               foreach($data->data as $rec) {
+                   $newRec = new $recordClass($rec);
+                   $newRec->init($client);
+                   $records[$newRec->get('id')] = $newRec;
+               }
+              
+           }
        }
        
 
