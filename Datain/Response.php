@@ -11,7 +11,8 @@
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Update for add profile functionality
  */
  
  
@@ -25,7 +26,8 @@
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Fix for minor bug in success() checking
  * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked examples and documentation for using the client library   
  *
  *
@@ -130,7 +132,14 @@ class Lamplight_Datain_Response implements Iterator {
         // check last request was a datain one:
        $validDataMethod = array("attend");
        $validDataAction = array("work");
-       $validMA = array("work/attend", "referral/add");
+       $validMA = array(
+           "work/attend", 
+           "referral/add", 
+           "people/add", 
+           "people/update",
+           "orgs/add",
+           "orgs/update"
+       );
        $ma = $client->getLastLamplightAction() . "/" . $client->getLastLamplightMethod();
 
 
@@ -234,6 +243,15 @@ class Lamplight_Datain_Response implements Iterator {
                             $this->_success = true;
                         }
 
+                    } else if (is_string($json->data) && $json->data == (float)$json->data) {
+
+                        // single record: if it has an id, does it match?
+                        if ($id > 0) {
+                            $this->_success = ($json->data->id == $id);
+                        } else {
+                            $this->_success = true;
+                        }
+                        
                     }
 
                 } else {
