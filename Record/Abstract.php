@@ -11,7 +11,8 @@
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Update for add profile functionality
  */
  
  
@@ -25,7 +26,8 @@
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    1.2 Minor changes for refactoring with Lamplight_Record_Mutable class
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  *
@@ -49,21 +51,6 @@ abstract class Lamplight_Record_Abstract implements Iterator {
    */
   protected $_index = 0;
 
-  /**
-   * @var Boolean       Whether this type of record is editable
-   */
-  protected $_editable = false;
-
-  /**
-   * @var String        The method used for sending requests via the API
-   */
-  protected $_lamplightMethod = '';
-
-  /**
-   * @var String        The action used for sending requests via the API
-   */
-  protected $_lamplightAction = '';
-
 
   /**
    * Constructor.  Takes an object of data, keys are field names and values
@@ -78,6 +65,15 @@ abstract class Lamplight_Record_Abstract implements Iterator {
       $this->_data = $data;
 
   }
+
+
+    /**
+     * Initializer, called by the Lamplight_RecordSet::factory method
+     * immediately after construction, for additional
+     * work by implementing classes
+     * @param Lamplight_Client
+     */
+    public function init (Lamplight_Client $client) {}
   
   
   /**
@@ -163,108 +159,12 @@ abstract class Lamplight_Record_Abstract implements Iterator {
 
 
 
-    /////////////////////////////////////////////////////
-    //
-    // Used to create new records.  Saving happens by Lamplight_Client
-    //
-
-
-    /**
-     * Sets the value of a field.  Will call setFieldname($value) where Fieldname
-     * is the field passed, if it exists.  If not will just set the property on the
-     * _data object
-     * @param String                 Name of the field
-     * @param Mixed                  Value to set.
-     * @return Lamplight_Record_Abstract
-     */
-    public function set ($field, $value) {
-
-
-        if (!$this->_editable) {
-            throw new Exception("You cannot change this type of Record");
-        }
-        if (!is_string($field)) {
-            throw new Exception("Fields to be set must be strings");
-        }
-
-
-        // Look for a setter:
-        // Construct and then check the method name, calling it if OK:
-        $methodName = 'set' . ucfirst(strtolower($field));
-        if (method_exists($this, $methodName) && is_callable(array($this, $methodName))) {
-            call_user_func(array($this, $methodName), $value);
-        } else {
-            $this->_data->{$field} = $value;
-        }
-
-        return $this;
-
-    }
-
-    /**
-     * Is this type of record editable?
-     * @return Boolean
-     */
-    public function isEditable () {
-        return $this->_editable;
-    }
-
-    /**
-     * Gets all the data for an API call.
-     * Used by Lamplight_Client
-     * @return Array
-     */
-    public function toAPIArray () {
-        return array();
-    }
-
-
-    /**
-     * Used by Lamplight_Client to construct the URL
-     * @return String
-     */
-    public function getLamplightMethod () {
-        return $this->_lamplightMethod;
-    }
-
-    /**
-     * Used by Lamplight_Client to construct the URL
-     * @return String
-     */
-    public function getLamplightAction () {
-        return $this->_lamplightAction;
-    }
-
-    /**
-     * Sets the attendee for this record (can only be one, currently)
-     * @param String                Email address           
-     * @return Lamplight_Record_Abstract
-     *
-     */
-    public function setAttendee ($emailAddress) {
-        if ($this->_editable && is_string($emailAddress)) {
-            $this->_data->attendee = $emailAddress;
-        }
-        return $this;
-    }
-
-    /**
-     * Sets the workarea for this record (can only be one, currently)
-     * @param Int                Workarea ID           
-     * @return Lamplight_Record_Abstract
-     *
-     */
-    public function setWorkarea ($workareaID) {
-        if ($this->_editable && is_int($workareaID)) {
-            $this->_data->workarea = (int)$workareaID;
-        }
-        return $this;
-    }
+ 
 
 
 
   /**
-   * How many records are there?
+   * How many fields are there?
    * @return Int
    */
   public function count() {
