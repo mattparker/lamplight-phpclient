@@ -8,7 +8,7 @@ API docs, worked examples, and downloads.
 ** Changelog **
 
 version
-
+1.2     Update to support add and edit profiles
 1.11    Adds returnShortData() and returnFullData() methods for some people/org
 1.1     Update to include 'attend work' and 'add referrals' datain module functionality
 
