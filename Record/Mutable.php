@@ -21,7 +21,6 @@ require_once('Lamplight/Record/Abstract.php');
  *
  * Lamplight_Record_Mutable is an abstract extension of the base Record class to provide
  * mutability - ie Records that may be altered via the API.
- * of different types of Record.
  * @category   Lamplight
  * @package    Lamplight_Record
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
