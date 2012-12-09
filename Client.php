@@ -12,7 +12,8 @@
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.11 Adds returnShortData() and returnFullData() methods for some people/orgs
- * @version    1.2  Adds add/edit profiles functionality.
+ * @history    1.2  Adds add/edit profiles functionality.
+ * @version    1.21 Adds near() method to do geographic search
  */
 
 require_once('Zend/Http/Client.php'); 
@@ -32,7 +33,8 @@ require_once('Zend/Http/Client.php');
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.11 Adds returnShortData() and returnFullData() methods for some people/org
- * @version    1.2  Adds add/edit profiles functionality.
+ * @history    1.2  Adds add/edit profiles functionality.
+ * @version    1.21 Adds near() method to do geographic search.
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  */
@@ -228,6 +230,22 @@ class Lamplight_Client extends Zend_Http_Client{
    public function fetchAll() {
      $this->_lamplightMethod = "all";
      return $this;
+   }
+
+
+
+   /**
+    * Allows geographic search
+    * @since 1.21
+    * @param String            Lat,Long | Northing,Easting | Postcode
+    * @param Int               Search radius
+    * @return Lamplight_Client
+    */
+   public function near ($where, $howClose) {
+      $this->setParameterGet('near', $where);
+      $this->setParameterGet('nearRadius', $howClose);
+      $this->returnFullData();
+      return $this;
    }
 
 
