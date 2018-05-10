@@ -13,7 +13,8 @@
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.11 Adds returnShortData() and returnFullData() methods for some people/orgs
  * @history    1.2  Adds add/edit profiles functionality.
- * @version    1.21 Adds near() method to do geographic search
+ * @history    1.21 Adds near() method to do geographic search.
+ * @version    1.22 Change to lamplight.online from lamplight3.info
  */
 
 require_once('Zend/Http/Client.php'); 
