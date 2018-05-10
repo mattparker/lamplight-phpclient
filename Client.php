@@ -34,7 +34,8 @@ require_once('Zend/Http/Client.php');
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.11 Adds returnShortData() and returnFullData() methods for some people/org
  * @history    1.2  Adds add/edit profiles functionality.
- * @version    1.21 Adds near() method to do geographic search.
+ * @history    1.21 Adds near() method to do geographic search.
+ * @version    1.22 Change to lamplight.online from lamplight3.info
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  */
@@ -86,7 +87,7 @@ class Lamplight_Client extends Zend_Http_Client{
    /**
     * @var String       Lamplight API base uri
     */
-   protected $_baseUri = "https://www.lamplight3.info/api/";
+   protected $_baseUri = "https://lamplight.online/api/";
 
 
    /**
