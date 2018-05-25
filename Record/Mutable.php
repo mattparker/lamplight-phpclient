@@ -174,7 +174,14 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
      *
      */
     public function setWorkarea ($workareaID) {
-        if ($this->_editable && is_int($workareaID)) {
+        if (!$this->_editable) {
+            return $this;
+        }
+        if (is_string($workareaID) && strstr($workareaID, ',')) {
+            $this->_data->workarea = $workareaID;
+            return $this;
+        }
+        if (is_int($workareaID)) {
             $this->_data->workarea = (int)$workareaID;
         }
         return $this;
