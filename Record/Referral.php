@@ -43,33 +43,35 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
     /**
      * We do allow editing referrals because we can make new ones
      * via the API
-     * @param Boolean
+     * @param bool
      */
     protected $_editable = true;
 
 
     /**
-     * @var String        The method used for sending requests via the API
+     * @var string        The method used for sending requests via the API
      */
     protected $_lamplightMethod = 'add';
 
     /**
-     * @var String        The action used for sending requests via the API
+     * @var string        The action used for sending requests via the API
      */
     protected $_lamplightAction = 'referral';
 
 
     /**
-     * Sets the date of the referral.  If none passed, today 
+     * Sets the date of the referral.  If none passed, today
      * is set
-     * @param String                In YYYY-mm-dd HH:ii:ss format
-     * @return Lamplight_Record_Referral
      *
+     * @param string $date In YYYY-mm-dd HH:ii:ss format
+     *
+     * @return \Lamplight_Record_Referral
+     * @throws \Exception
      */
     public function setDate ($date = '') {
 
         if (!is_string($date)) {
-            throw new Exception("Date must be a string");
+            throw new \Exception("Date must be a string");
         }
 
         if (!$date) {
@@ -83,26 +85,28 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
     }
 
     /**
-     * Sets the referral reason 
-     * @param String                
-     * @return Lamplight_Record_Referral
+     * Sets the referral reason
      *
+     * @param string $reason
+     *
+     * @return \Lamplight_Record_Referral
+     * @throws \Exception
      */
     public function setReason ($reason = '') {
         if (!is_string($reason)) {
-            throw new Exception("Referral reason must be a string");
+            throw new \Exception("Referral reason must be a string");
         }
         $this->_data->reason = (string)$reason;
         return $this;
     }
 
 
-
-
     /**
      * Gets all the data for an API call.
      * Used by Lamplight_Client
-     * @return Array
+     *
+     * @return array
+     * @throws \Exception
      */
     public function toAPIArray () {
 
@@ -120,7 +124,7 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
             }
         }
         if ($ar['attendee'] == '') {
-            throw new Exception("Attendee has not been set but is not optional");
+            throw new \Exception("Attendee has not been set but is not optional");
         }
         return $ar;
     }
