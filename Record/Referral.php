@@ -105,6 +105,8 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
      * @return Array
      */
     public function toAPIArray () {
+
+        $built_ins = array('date', 'workarea', 'attendee', 'reason');
         $ar = array(
             'date_from' => $this->get('date'),
             'workareaid' => $this->get('workarea'),
@@ -112,6 +114,11 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
             'referral_reason' => $this->get('reason')
         );
 
+        foreach ($this->_data as $fieldName => $fieldValue) {
+            if (!in_array($fieldName, $built_ins)) {
+                $ar[$fieldName] = $fieldValue;
+            }
+        }
         if ($ar['attendee'] == '') {
             throw new Exception("Attendee has not been set but is not optional");
         }
