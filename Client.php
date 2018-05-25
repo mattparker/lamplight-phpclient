@@ -411,26 +411,12 @@ class Lamplight_Client extends Zend_Http_Client{
      
      // Set up the main uri with method and parameters etc.
      $this->_constructUri();
-   
-  
-     // Now add the API authentication parameters
-     switch (($method == null ? $this->method : $method)) {
-       
-       case self::POST: 
-         $paramMethod = "setParameterPost";
-         break;
-       
-       case self::GET:
-       default:
-         $paramMethod = "setParameterGet";
-         break;
-     }
-     $this->{$paramMethod}('key', $this->_key);
-     $this->{$paramMethod}('lampid', $this->_lampid);
-     $this->{$paramMethod}('project', $this->_project);
-     
 
-   
+     // Now add the API authentication parameters
+     $this->setParameterGet('key', $this->_key);
+     $this->setParameterGet('lampid', $this->_lampid);
+     $this->setParameterGet('project', $this->_project);
+
      return parent::request($method);
    
    }
