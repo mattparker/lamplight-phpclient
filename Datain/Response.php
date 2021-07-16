@@ -243,7 +243,7 @@ class Lamplight_Datain_Response implements Iterator {
                             $this->_success = true;
                         }
 
-                    } else if (is_string($json->data) && $json->data == (float)$json->data) {
+                    } else if (is_numeric($json->data) && $json->data > 0) {
 
                         // single record: if it has an id, does it match?
                         if ($id > 0) {
