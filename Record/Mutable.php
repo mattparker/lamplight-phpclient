@@ -156,13 +156,13 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
 
     /**
      * Sets the attendee for this record (can only be one, currently)
-     * @param String                Email address           
+     * @param string | int                Email address or profile ID
      * @return Lamplight_Record_Abstract
      *
      */
-    public function setAttendee ($emailAddress) {
-        if ($this->_editable && is_string($emailAddress)) {
-            $this->_data->attendee = $emailAddress;
+    public function setAttendee ($attendee_identifier) {
+        if ($this->_editable) {
+            $this->_data->attendee = $attendee_identifier;
         }
         return $this;
     }
