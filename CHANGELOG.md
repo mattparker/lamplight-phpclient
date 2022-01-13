@@ -1,11 +1,6 @@
-Welcome to the Lamplight API php client.
-
-There's much more info at www.lamplight-publishing.co.uk, including
-API docs, worked examples, and downloads.
+# CHANGELOG
 
 
-
-** Changelog **
 
 version
 1.22    Change to new URL lamplight.online
