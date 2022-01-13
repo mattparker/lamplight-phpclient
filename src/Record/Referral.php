@@ -2,7 +2,7 @@
 /**
  *
  * Lamplight php API client
- *  
+ *
  * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
@@ -14,10 +14,10 @@
  * @version    1.2 Add/edit profile functionality
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  */
- 
+
 require_once 'Lamplight/Record/Mutable.php';
 
- 
+
 /**
  *
  *
@@ -30,13 +30,13 @@ require_once 'Lamplight/Record/Mutable.php';
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @version    1.2 Refactory to extend Lamplight_Record_Mutable
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
- * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked example showing how to create a new referral record.
+ * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
+ *     client library
+ * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked example showing how to create a
+ *     new referral record.
  *
  *
  */
-
-
 class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
 
 
@@ -65,13 +65,13 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
      *
      * @param string $date In YYYY-mm-dd HH:ii:ss format
      *
-     * @return \Lamplight_Record_Referral
-     * @throws \Exception
+     * @return Lamplight_Record_Referral
+     * @throws Exception
      */
     public function setDate ($date = '') {
 
         if (!is_string($date)) {
-            throw new \Exception("Date must be a string");
+            throw new Exception("Date must be a string");
         }
 
         if (!$date) {
@@ -89,12 +89,12 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
      *
      * @param string $reason
      *
-     * @return \Lamplight_Record_Referral
-     * @throws \Exception
+     * @return Lamplight_Record_Referral
+     * @throws Exception
      */
     public function setReason ($reason = '') {
         if (!is_string($reason)) {
-            throw new \Exception("Referral reason must be a string");
+            throw new Exception("Referral reason must be a string");
         }
         $this->_data->reason = (string)$reason;
         return $this;
@@ -106,7 +106,7 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
      * Used by Lamplight_Client
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function toAPIArray () {
 
@@ -124,7 +124,7 @@ class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
             }
         }
         if ($ar['attendee'] == '') {
-            throw new \Exception("Attendee has not been set but is not optional");
+            throw new Exception("Attendee has not been set but is not optional");
         }
         return $ar;
     }

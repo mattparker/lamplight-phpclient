@@ -2,7 +2,7 @@
 /**
  *
  * Lamplight php API client
- *  
+ *
  * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
@@ -14,8 +14,8 @@
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @version    1.2 Update for add profile functionality
  */
- 
- 
+
+
 /**
  *
  *
@@ -28,15 +28,11 @@
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @version    1.2 Fix for minor bug in success() checking
- * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked examples and documentation for using the client library   
+ * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked examples and documentation for
+ *     using the client library
  *
  *
  */
-
-
-
-
-
 class Lamplight_Datain_Response implements Iterator {
 
     /**
@@ -58,7 +54,7 @@ class Lamplight_Datain_Response implements Iterator {
     /**
      * @var Array                       If we add to multiple records at once,
      *                                  we create a Lamplight_Datain_Response
-     *                                  for each record, and use the parent 
+     *                                  for each record, and use the parent
      *                                  to hold and iterate through the children
      */
     protected $_responseChildren = array();
@@ -99,7 +95,6 @@ class Lamplight_Datain_Response implements Iterator {
     protected $_errorMessage = null;
 
 
-
     /**
      * Wrapper for the response, providing some easier to use
      * methods for datain responses
@@ -121,46 +116,41 @@ class Lamplight_Datain_Response implements Iterator {
     }
 
 
-
     /**
      * Sets the client
      * @param Lamplight_Client
      * @return Lamplight_Datain_Response
      */
     public function setClient (Lamplight_Client $client) {
-        
+
         // check last request was a datain one:
-       $validDataMethod = array("attend");
-       $validDataAction = array("work");
-       $validMA = array(
-           "work/attend", 
-           "referral/add", 
-           "people/add", 
-           "people/update",
-           "orgs/add",
-           "orgs/update"
-       );
-       $ma = $client->getLastLamplightAction() . "/" . $client->getLastLamplightMethod();
+        $validDataMethod = array("attend");
+        $validDataAction = array("work");
+        $validMA = array(
+            "work/attend",
+            "referral/add",
+            "people/add",
+            "people/update",
+            "orgs/add",
+            "orgs/update"
+        );
+        $ma = $client->getLastLamplightAction() . "/" . $client->getLastLamplightMethod();
 
 
-       if (!in_array($ma, $validMA)) {
+        if (!in_array($ma, $validMA)) {
 
-           throw new Exception("The last request was not a datain one.");
+            throw new Exception("The last request was not a datain one.");
 
-       }
+        }
 
-       $this->_response = $client->getLastResponse();
-       $this->_client = $client;
+        $this->_response = $client->getLastResponse();
+        $this->_client = $client;
 
-       // Work out if we did lots of datain's, and if so set up 
-       // a child response for each
-       $this->_handleMultiples();
+        // Work out if we did lots of datain's, and if so set up
+        // a child response for each
+        $this->_handleMultiples();
 
     }
-
-
-
- 
 
 
     /**
@@ -198,7 +188,6 @@ class Lamplight_Datain_Response implements Iterator {
     }
 
 
-
     /**
      * Checks if the datain request was successful
      * @return Boolean
@@ -213,10 +202,10 @@ class Lamplight_Datain_Response implements Iterator {
                 foreach ($this->_responseChildren as $child) {
 
                     if ($child->success()) {
-                        $this->_success ++;
+                        $this->_success++;
                     }
                 }
-                
+
             } else {
 
                 $json = $this->getJsonResponse();
@@ -233,7 +222,7 @@ class Lamplight_Datain_Response implements Iterator {
                         // multiples: check each
 
                     } else if (is_object($json->data)
-                        && property_exists($json->data, 'id')) { 
+                        && property_exists($json->data, 'id')) {
 
 
                         // single record: if it has an id, does it match?
@@ -251,7 +240,7 @@ class Lamplight_Datain_Response implements Iterator {
                         } else {
                             $this->_success = true;
                         }
-                        
+
                     }
 
                 } else {
@@ -260,12 +249,12 @@ class Lamplight_Datain_Response implements Iterator {
                 }
 
             }
-             
+
         }
 
         if ($this->_isMultiple) {
             return $this->_success == count($this->_responseChildren);
-        }        
+        }
         return $this->_success;
 
     }
@@ -305,7 +294,7 @@ class Lamplight_Datain_Response implements Iterator {
             $json = $this->getJsonResponse();
             if ($json && is_object($json) && property_exists($json, 'error')) {
                 $this->_error = $json->error;
-            }   
+            }
         } else {
             $this->_error = false;
         }
@@ -342,9 +331,7 @@ class Lamplight_Datain_Response implements Iterator {
     }
 
 
-
-
-   /**
+    /**
      * Works out if we've got multi records
      */
     protected function _handleMultiples () {
@@ -370,7 +357,7 @@ class Lamplight_Datain_Response implements Iterator {
                                 'id' => $rec->id,
                                 'success' => $rec->attend,
                                 'error' => (property_exists($rec, 'error') ? $rec->error > 0 : false),
-                                'errorMessage' =>  (property_exists($rec, 'msg') ? $rec->msg : ''),
+                                'errorMessage' => (property_exists($rec, 'msg') ? $rec->msg : ''),
                                 'responseJson' => $rec
                             ),
                             $this
@@ -409,43 +396,42 @@ class Lamplight_Datain_Response implements Iterator {
     }
 
 
+    /**
+     * How many records are there?
+     * @return Int
+     */
+    public function count () {
+        return count($this->_responseChildren);
+    }
 
-  /**
-   * How many records are there?
-   * @return Int
-   */
-  public function count() {
-    return count($this->_responseChildren);
-  }
-  
-  /////// Iterator methods
-  public function rewind(){
+    /////// Iterator methods
+    public function rewind () {
 
         $this->_responseChildrenPointer = 0;
-  }
-  /**
-   * @return Mixed
-   */
-  public function current(){
+    }
+
+    /**
+     * @return Mixed
+     */
+    public function current () {
         $k = array_keys($this->_responseChildren);
         $var = $this->_responseChildren[$k[$this->_responseChildrenPointer]];
         return $var;
     }
-  /**
-   * @return Mixed
-   */
-    public function key()
-    {
+
+    /**
+     * @return Mixed
+     */
+    public function key () {
         $k = array_keys($this->_responseChildren);
         $var = $k[$this->_responseChildrenPointer];
         return $var;
     }
 
-  /**
-   * @return Mixed | false
-   */
-    public function next()
-    {
+    /**
+     * @return Mixed | false
+     */
+    public function next () {
         $k = array_keys($this->_responseChildren);
         if (isset($k[++$this->_responseChildrenPointer])) {
             $var = $this->_responseChildren[$k[$this->_responseChildrenPointer]];
@@ -454,18 +440,15 @@ class Lamplight_Datain_Response implements Iterator {
             return false;
         }
     }
+
     /**
      * @return Boolean
      */
-    public function valid()
-    {
+    public function valid () {
         $k = array_keys($this->_responseChildren);
         $var = isset($k[$this->_responseChildrenPointer]);
         return $var;
     }
-
-
-
 
 
 }

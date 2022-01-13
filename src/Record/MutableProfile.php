@@ -2,7 +2,7 @@
 /**
  *
  * Lamplight php API client
- *  
+ *
  * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
@@ -12,14 +12,13 @@
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Update to allow adding and updating people and org records.  MutableProfile 
+ * @version    1.2 Update to allow adding and updating people and org records.  MutableProfile
  *             adds profile-specific methods for editing.
-
  */
- 
- 
+
+
 require_once 'Lamplight/Record/Mutable.php';
- 
+
 /**
  *
  *
@@ -31,14 +30,12 @@ require_once 'Lamplight/Record/Mutable.php';
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @version     1.2 extends Lamplight_Record_Mutable to enable editing
- * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
+ * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
+ *     client library
  *
  *
  */
-
-
 class Lamplight_Record_MutableProfile extends Lamplight_Record_Mutable {
-
 
 
     /**
@@ -53,7 +50,6 @@ class Lamplight_Record_MutableProfile extends Lamplight_Record_Mutable {
      *                      This may change to update if there's an ID
      */
     protected $_lamplightMethod = 'add';
-    
 
 
     /**
@@ -105,7 +101,7 @@ class Lamplight_Record_MutableProfile extends Lamplight_Record_Mutable {
         foreach ($this->_data as $fieldName => $fieldValue) {
             $ar[$fieldName] = $fieldValue;
         }
-        
+
 
         return $ar;
     }

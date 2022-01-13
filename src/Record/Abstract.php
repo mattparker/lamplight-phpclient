@@ -38,7 +38,7 @@ abstract class Lamplight_Record_Abstract implements Iterator {
 
 
     /**
-     * @var \stdClass        Data for this record
+     * @var stdClass        Data for this record
      */
     protected $_data;
 
@@ -79,7 +79,7 @@ abstract class Lamplight_Record_Abstract implements Iterator {
     /**
      * Returns field value by key
      *
-     * @param string $field    Field name
+     * @param string $field Field name
      *
      * @return string
      */
@@ -96,7 +96,7 @@ abstract class Lamplight_Record_Abstract implements Iterator {
     /**
      * Renders record data using a simple templating system
      *
-     * @param string $template       Template to use.  If no template passed, will return
+     * @param string $template Template to use.  If no template passed, will return
      *                     a comma-separated list of values.
      *
      * @return string
@@ -129,7 +129,7 @@ abstract class Lamplight_Record_Abstract implements Iterator {
      * Implementations may override this method in the subclasses to provide custom
      * formatting etc.
      *
-     * @param string $field          Field name
+     * @param string $field Field name
      *
      * @return string
      */
@@ -147,8 +147,8 @@ abstract class Lamplight_Record_Abstract implements Iterator {
     /**
      * implode() like function, but recurses if elements are themselves arrays
      *
-     * @param string $glue        Separator
-     * @param array  $pieces         Of pieces to glue together
+     * @param string $glue Separator
+     * @param array $pieces Of pieces to glue together
      *
      * @return string
      */

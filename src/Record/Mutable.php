@@ -2,7 +2,7 @@
 /**
  *
  * Lamplight php API client
- *  
+ *
  * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
@@ -13,7 +13,7 @@
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @version    1.2   Adds ability to add/update people and organisation profiles
  */
- 
+
 require_once('Lamplight/Record/Abstract.php');
 
 /**
@@ -27,18 +27,12 @@ require_once('Lamplight/Record/Abstract.php');
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @version    1.2    Refactoring to separate out get and setting of data
- * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
+ * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
+ *     client library
  *
  *
  */
-
-
-
-
-
 abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
-
-
 
 
     /**
@@ -69,7 +63,8 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
      * Provided for implementing class if required
      * @param Lamplight_Client
      */
-    public function beforeSave (Lamplight_Client $client) {}
+    public function beforeSave (Lamplight_Client $client) {
+    }
 
     /**
      * Called by Lamplight_Client::save() just after the request()
@@ -78,10 +73,8 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
      * @param Lamplight_Client
      * @param Zend_Http_Response
      */
-    public function afterSave (Lamplight_Client $client, Zend_Http_Response $response) {}
-
-
-
+    public function afterSave (Lamplight_Client $client, Zend_Http_Response $response) {
+    }
 
 
     /**
@@ -106,7 +99,7 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
      */
     public function isEditable () {
         return $this->_editable;
-    }    
+    }
 
 
 
@@ -149,11 +142,6 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
     }
 
 
-
-
-
-
-
     /**
      * Sets the attendee for this record (can only be one, currently)
      * @param string | int                Email address or profile ID
@@ -169,7 +157,7 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
 
     /**
      * Sets the workarea for this record (can only be one, currently)
-     * @param Int                Workarea ID           
+     * @param Int                Workarea ID
      * @return Lamplight_Record_Abstract
      *
      */
@@ -186,6 +174,6 @@ abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
         }
         return $this;
     }
-    
+
 
 }

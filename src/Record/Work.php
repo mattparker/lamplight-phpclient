@@ -2,7 +2,7 @@
 /**
  *
  * Lamplight php API client
- *  
+ *
  * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
@@ -15,7 +15,7 @@
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  */
 require_once 'Lamplight/Record/Abstract.php';
- 
+
 /**
  *
  *
@@ -28,12 +28,11 @@ require_once 'Lamplight/Record/Abstract.php';
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @version    1.2 No change
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
+ * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
+ *     client library
  *
  *
  */
-
-
 class Lamplight_Record_Work extends Lamplight_Record_Abstract {
 
 
