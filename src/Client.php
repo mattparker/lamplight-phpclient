@@ -46,6 +46,11 @@ use GuzzleHttp\Client as GuzzleClient;
  *
  */
 class Client {
+    const USER_ROLE = 'user';
+    const CONTACT_ROLE = 'contact';
+    const STAFF_ROLE = 'staff';
+    const FUNDER_ROLE = 'funder';
+    const ORGANISATION_ROLE = 'org';
 
 
     /**
@@ -88,6 +93,12 @@ class Client {
      */
     protected string $last_lamplight_action = '';
 
+    /**
+     * @var
+     */
+    protected $last_response;
+
+
 
     /**
      * @var String       Lamplight API base uri
@@ -98,6 +109,13 @@ class Client {
      * @var GuzzleClient
      */
     protected GuzzleClient $client;
+
+    /**
+     * @var array
+     */
+    protected array $query_params = [];
+
+    protected array $form_params = [];
 
 
     /**
@@ -129,8 +147,8 @@ class Client {
         $this->lamplight_action = "";
         $this->lamplight_method = "";
 
-        //$this->setUri($this->_baseUri);
-        //$this->resetParameters(false);
+        $this->query_params = [];
+        $this->form_params = [];
 
         return $this;
     }
@@ -163,32 +181,59 @@ class Client {
 
 
     /**
-     * Sets parameters to fetch work records
-     * @return Lamplight_Client     Fluent interface
+     * Add a key/value pair to a GET request
+     * @param $key
+     * @param $value
+     * @return void
      */
-    public function fetchWork () {
+    public function setParameterGet ($key, $value) {
+        $this->query_params[$key] = $value;
+    }
+
+    /**
+     * Add a data for a POST request
+     * @param $key
+     * @param $value
+     * @return void
+     */
+    public function setParameterPost ($key, $value) {
+        $this->form_params[$key] = $value;
+    }
+
+    public function setMethod (string $method) {
+        $this->http_method = $method;
+    }
+
+    /**
+     * Sets parameters to fetch work records
+     * @return Client     Fluent interface
+     */
+    public function fetchWork () : Client {
         $this->lamplight_action = "work";
         return $this;
     }
 
+
+
     /**
      * Sets parameters to fetch people records
-     * @param String $role Role of person to fetch (when using some|all)
-     * @return Lamplight_Client     Fluent interface
+     * @param String $role Role of person to fetch (when using some|all) - one of the *_ROLE class constants
+     * @return Client     Fluent interface
      */
-    public function fetchPeople ($role = '') {
+    public function fetchPeople (string $role = '') : Client {
         $this->lamplight_action = "people";
-        if (in_array($role, array('user', 'contact', 'staff', 'funder'))) {
-            $this->setParameterGet("role", $role);
+        if (in_array($role, array(self::USER_ROLE, self::CONTACT_ROLE, self::STAFF_ROLE, self::FUNDER_ROLE))) {
+            $this->setParameterGet('role', $role);
         }
         return $this;
     }
 
+
     /**
      * Sets parameters to fetch workarea records
-     * @return Lamplight_Client     Fluent interface
+     * @return Client     Fluent interface
      */
-    public function fetchWorkarea () {
+    public function fetchWorkarea () : Client {
         $this->lamplight_action = "workarea";
         return $this;
     }
@@ -196,12 +241,12 @@ class Client {
     /**
      * Sets parameters to fetch organisation records
      * @param String $role Role of org to fetch (when using some|all)
-     * @return Lamplight_Client     Fluent interface
+     * @return Client     Fluent interface
      */
-    public function fetchOrgs ($role = '') {
+    public function fetchOrgs (string $role = '') : Client {
         $this->lamplight_action = "orgs";
-        if (in_array($role, array('user', 'contact', 'org', 'funder'))) {
-            $this->setParameterGet("role", $role);
+        if (in_array($role, array(self::USER_ROLE, self::CONTACT_ROLE, self::ORGANISATION_ROLE, self::FUNDER_ROLE))) {
+            $this->setParameterGet('role', $role);
         }
         return $this;
     }
@@ -210,9 +255,9 @@ class Client {
     /**
      * Sets parameters to fetch one record
      * @param Int        ID of the record to fetch
-     * @return Lamplight_Client     Fluent interface
+     * @return Client     Fluent interface
      */
-    public function fetchOne ($id = 0) {
+    public function fetchOne (int $id = 0) : Client {
         $this->lamplight_method = "one";
         if ($id > 0) {
             $this->setParameterGet('id', $id);
@@ -223,9 +268,9 @@ class Client {
 
     /**
      * Sets parameters to fetch some records
-     * @return Lamplight_Client     Fluent interface
+     * @return Client     Fluent interface
      */
-    public function fetchSome () {
+    public function fetchSome () : Client {
         $this->lamplight_method = "some";
         return $this;
     }
@@ -233,9 +278,9 @@ class Client {
 
     /**
      * Sets parameters to fetch all records
-     * @return Lamplight_Client     Fluent interface
+     * @return Client     Fluent interface
      */
-    public function fetchAll () {
+    public function fetchAll () : Client {
         $this->lamplight_method = "all";
         return $this;
     }
@@ -245,10 +290,10 @@ class Client {
      * Allows geographic search
      * @param String            Lat,Long | Northing,Easting | Postcode
      * @param Int               Search radius
-     * @return Lamplight_Client
+     * @return Client
      * @since 1.21
      */
-    public function near ($where, $howClose) {
+    public function near (string $where, $howClose) : Client {
         $this->setParameterGet('near', $where);
         $this->setParameterGet('nearRadius', $howClose);
         $this->returnFullData();
@@ -259,9 +304,9 @@ class Client {
     /**
      * Requests summary data (on some or all requests for
      * orgs or people
-     * @return Lamplight_Client    Fluent interface
+     * @return Client    Fluent interface
      */
-    public function returnShortData () {
+    public function returnShortData () : Client {
         $this->setParameterGet('return', 'short');
         return $this;
     }
@@ -270,9 +315,9 @@ class Client {
     /**
      * Requests all publishable data (on some or all requests for
      * orgs or people.  Response body will be bigger and slower!
-     * @return Lamplight_Client    Fluent interface
+     * @return Client    Fluent interface
      */
-    public function returnFullData () {
+    public function returnFullData () : Client {
         $this->setParameterGet('return', 'full');
         return $this;
     }
@@ -288,9 +333,9 @@ class Client {
      * Add someone to attend a work record
      * @param Int          ID of work record
      * @param String       Email address of person wanting to attend
-     * @return Lamplight_Client    Fluent interface
+     * @return Client    Fluent interface
      */
-    public function attendWork ($recordid, $emailOfAttendee) {
+    public function attendWork (int $recordid, $emailOfAttendee) : Client {
         // this is work
         $this->fetchWork();
         $this->setParameterPost('id', $recordid);
@@ -304,22 +349,23 @@ class Client {
 
     /**
      * Saves a Lamplight_Record* if that is allowed by the API
-     * @param Lamplight_Record_Abstract         With all the data to save
-     * @return  Zend_Http_Response         Response Object
+     * @param \Lamplight\Record\Mutable    With all the data to save
+     * @return  Response Object
+     * @throws \Exception
      */
-    public function save (Lamplight_Record_Mutable $rec) {
+    public function save (\Lamplight\Record\Mutable $record) {
 
-        if (!$rec->isEditable()) {
-            throw new Exception("You are trying to save a record that is not editable");
+        if (!$record->isEditable()) {
+            throw new \Exception("You are trying to save a record that is not editable");
         }
 
-        $rec->beforeSave($this);
+        $record->beforeSave($this);
 
-        $this->lamplight_method = $rec->getLamplightMethod();
-        $this->lamplight_action = $rec->getLamplightAction();
+        $this->lamplight_method = $record->getLamplightMethod();
+        $this->lamplight_action = $record->getLamplightAction();
         $this->setMethod('POST');
 
-        $data = $rec->toAPIArray();
+        $data = $record->toAPIArray();
 
         foreach ($data as $paramName => $paramValue) {
             $this->setParameterPost($paramName, $paramValue);
@@ -327,7 +373,7 @@ class Client {
 
         $ret = $this->request();
 
-        $rec->afterSave($this, $ret);
+        $record->afterSave($this, $ret);
 
         return $ret;
     }
@@ -340,22 +386,19 @@ class Client {
      * only work for datain type responses - calling this after
      * fetch* requests will throw an Exception
      *
-     * @return Lamplight_Datain_Response
+     * @return \Lamplight\Datain\Response
      */
-    public function getDatainResponse () {
-
-        require_once('Datain/Response.php');
-        return new Lamplight_Datain_Response($this);
-
+    public function getDatainResponse () : \Lamplight\Datain\Response {
+        return new \Lamplight\Datain\Response($this);
     }
 
 
     /**
      * Sets method to attend and adds the attendee
      * @param String     Email address of person wanting to attend
-     * @return Lamplight_Client
+     * @return Client
      */
-    protected function _attend ($emailOfAttendee) {
+    protected function _attend ($emailOfAttendee) : Client {
         $this->setMethod('POST');
         $this->lamplight_method = "attend";
         $this->setParameterPost('attendee', $emailOfAttendee);
@@ -398,27 +441,35 @@ class Client {
     /**
      * Send the HTTP request and return an HTTP response object
      * Sets Lamplight API key parameters before request
-     * @param String $method GET || POST
-     * @return Zend_Http_Response         Response Object
-     * @throws Zend_Http_Client_Exception
+
      */
-    public function request ($method = null) {
+    public function request () {
 
         if (!($this->lamplight_key && $this->lamplight_id && $this->lamplight_project)) {
             require_once("Zend/Http/Client/Exception.php");
-            throw new Zend_Http_Client_Exception("Lamplight API access parameters have not been set");
+            throw new \Exception("Lamplight API access parameters have not been set");
         }
 
 
         // Set up the main uri with method and parameters etc.
-        $this->_constructUri();
+        $uri = $this->_constructUri();
 
         // Now add the API authentication parameters
         $this->setParameterGet('key', $this->lamplight_key);
         $this->setParameterGet('lampid', $this->lamplight_id);
         $this->setParameterGet('project', $this->lamplight_project);
 
-        return parent::request($method);
+        if ($this->http_method === 'GET') {
+            $params = $this->query_params;
+        } else {
+            $params = $this->form_params;
+        }
+
+        // TODO $response may need a new class to reflect previous API
+        $response = $this->client->request($this->http_method, $uri, $params);
+
+        $this->last_response = $response;
+        return $response;
 
     }
 
@@ -436,50 +487,44 @@ class Client {
      * depending on the last request.
      *
      * @param String            Class name to use for Records, overriding the default.
-     * @return Lamplight_RecordSet  RecordSet containing Records
-     * @throws Zend_Http_Client_Exception
+     * @return \Lamplight\RecordSet  RecordSet containing Records
+     * @throws \Exception
      */
     public function getRecordSet ($recordClassName = '') {
 
         $resp = $this->getLastResponse();
         if ($resp === null) {
-            require_once("Zend/Http/Client/Exception.php");
-            throw new Zend_Http_Client_Exception("Response not available (not stored or not requested");
+            throw new \Exception("Response not available (not stored or not requested");
         }
 
         require_once 'Lamplight/RecordSet.php';
-        return Lamplight_RecordSet::factory($this, $recordClassName);
+        return \Lamplight\RecordSet::factory($this, $recordClassName);
 
     }
 
+    public function getLastResponse () {
+        return $this->last_reponse;
+    }
 
     /**
      * Adds the details of what we want and how many to the uri.
-     * @return Lamplight_Client     Fluent interface
-     * @throws Zend_Http_Client_Exception
+     * @return string URI
+     * @throws \Exception
      */
-    protected function _constructUri () {
+    protected function _constructUri () : string {
 
-        // If the uri is unchanged, we need to change it:
-        $uri = $this->getUri(true);
-        //    if ($uri == $this->_baseUri) {
+        $uri = $this->_baseUri;
 
         if (!($this->lamplight_action && $this->lamplight_method)) {
-            require_once("Zend/Http/Client/Exception.php");
-            throw new Zend_Http_Client_Exception("You need to specify what you want to request, and how many of them");
+            throw new \Exception("You need to specify what you want to request, and how many of them");
         }
 
-        $uri .= $this->lamplight_action . '/';
-        $uri .= $this->lamplight_method . '/';
-        $uri .= 'format/json';
+        $uri .= $this->lamplight_action . '/' . $this->lamplight_method . '/' . 'format/json';
 
         $this->last_lamplight_action = $this->lamplight_action;
         $this->last_lamplight_method_sent = $this->lamplight_method;
 
-        $this->setUri($uri);
-
-        //    }
-        return $this;
+        return $uri;
     }
 
 
@@ -490,11 +535,12 @@ class Client {
      * @return Mixed | null     null returned if key not found
      */
     public function getParameter ($key) {
-        if (array_key_exists($key, $this->paramsGet)) {
-            return $this->paramsGet[$key];
+
+        if (array_key_exists($key, $this->query_params)) {
+            return $this->query_params[$key];
         }
-        if (array_key_exists($key, $this->paramsPost)) {
-            return $this->paramsPost[$key];
+        if (array_key_exists($key, $this->form_params)) {
+            return $this->form_params[$key];
         }
         return null;
     }
