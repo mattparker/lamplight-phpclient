@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight;
 /**
  *
  * Lamplight php API client
@@ -17,7 +18,6 @@
  * @version    1.22 Change to lamplight.online from lamplight3.info
  */
 
-require_once('Zend/Http/Client.php'); 
  
 /**
  *
@@ -42,7 +42,7 @@ require_once('Zend/Http/Client.php');
  */
 
 
-class Lamplight_Client extends Zend_Http_Client{
+class Client {
 
  
    /**
@@ -60,6 +60,7 @@ class Lamplight_Client extends Zend_Http_Client{
     */
    protected $_project = 0;
 
+   protected string $http_method = 'GET';
 
    /**
     * @var String       Whether to fetch one, some or all records
@@ -88,21 +89,19 @@ class Lamplight_Client extends Zend_Http_Client{
    /**
     * @var String       Lamplight API base uri
     */
-   protected $_baseUri = "https://lamplight.online/api/";
+    protected string $_baseUri = "https://lamplight.online/api/";
+    protected \GuzzleHttp\Client $client;
 
 
-   /**
+    /**
     * Constructor.  Allows for additional API parameters and sets the method.
     * Also overrides the base uri to point at Lamplight
     * @param string
     * @param array          Config options
     */
-   public function __construct($uri = '', $config) {
+   public function __construct(\GuzzleHttp\Client $client, $config) {
    
-   
-     // Set the uri, and look for API key etc.
-     $uri = $this->_baseUri;
-     
+
      // Allow setting of API key details at construction:
      $configKeys = array('key', 'lampid', 'project');
      foreach($configKeys as $key) {
@@ -111,11 +110,9 @@ class Lamplight_Client extends Zend_Http_Client{
          unset($config[$key]);
        }
      }
-     
-     $this->setMethod("GET");
-   
-     return parent::__construct($uri, $config);
-   
+
+
+       $this->client = $client;
    }
    
    
