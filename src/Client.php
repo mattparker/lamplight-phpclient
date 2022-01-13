@@ -1,36 +1,39 @@
 <?php
 
 namespace Lamplight;
+
+use GuzzleHttp\Client as GuzzleClient;
+
 /**
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
  * @category   Lamplight
- * @package    Lamplight_Client
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @package    Lamplight
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.11 Adds returnShortData() and returnFullData() methods for some people/orgs
  * @history    1.2  Adds add/edit profiles functionality.
  * @history    1.21 Adds near() method to do geographic search.
- * @version    1.22 Change to lamplight.online from lamplight3.info
+ * @version    2.01 Refactor to new version
  */
 
 
 /**
  *
  *
- * The Lamplight_Client class provides a php wrapper for the Lamplight
+ * The Lamplight\Client class provides a php wrapper for the Lamplight
  * publishing API.
  *
- * Lamplight_Client provides convenience methods to request and send data
- * to the Lamplight API and extends Zend_Http_Client to run the actual requests.
+ * Lamplight\Client provides convenience methods to request and send data
+ * to the Lamplight API and uses the GuzzleHttp\Client to make the requests
  *
  * @category   Lamplight
- * @package    Lamplight_Client
+ * @package    Lamplight
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
@@ -48,71 +51,88 @@ class Client {
     /**
      * @var String       API key from Lamplight
      */
-    protected $_key = '';
+    protected string $lamplight_key = '';
 
     /**
      * @var Int          Lamplight ID provided by Lamplight
      */
-    protected $_lampid = 0;
+    protected int $lamplight_id = 0;
 
     /**
      * @var Int          Lamplight Project ID provided by Lamplight
      */
-    protected $_project = 0;
+    protected int $lamplight_project = 0;
 
     protected string $http_method = 'GET';
 
     /**
      * @var String       Whether to fetch one, some or all records
      */
-    protected $_lamplightMethod = '';
+    protected string $lamplight_method = '';
 
 
     /**
      * @var String       The method used on the last request
      */
-    protected $_lastMethod = '';
+    protected string $last_lamplight_method_sent = '';
 
 
     /**
      * @var String       Whether to fetch people, orgs, workareas or work
      */
-    protected $_lamplightAction = '';
+    protected string $lamplight_action = '';
 
 
     /**
      * @var String        The action used on the last request
      */
-    protected $_lastAction = '';
+    protected string $last_lamplight_action = '';
 
 
     /**
      * @var String       Lamplight API base uri
      */
     protected string $_baseUri = "https://lamplight.online/api/";
-    protected \GuzzleHttp\Client $client;
+
+    /**
+     * @var GuzzleClient
+     */
+    protected GuzzleClient $client;
 
 
     /**
      * Constructor.  Allows for additional API parameters and sets the method.
      * Also overrides the base uri to point at Lamplight
-     * @param string
-     * @param array          Config options
+     * @param GuzzleClient
+     * @param array          Config options ['lampid' => 123, 'project' => 1, 'key' => '<api key from Lamplight>']
      */
-    public function __construct (\GuzzleHttp\Client $client, $config) {
-
+    public function __construct (GuzzleClient $client, $config) {
 
         // Allow setting of API key details at construction:
-        $configKeys = array('key', 'lampid', 'project');
-        foreach ($configKeys as $key) {
+        foreach (['key', 'lampid', 'project'] as $key) {
             if (array_key_exists($key, $config)) {
                 $this->setApiParameter($key, $config[$key]);
-                unset($config[$key]);
             }
         }
 
-
         $this->client = $client;
+    }
+
+
+    /**
+     * Clears GET parameters, but leaves API credentials.  Does not discard
+     * previous requests
+     * @return Client     Fluent interface
+     */
+    public function resetClient () : Client {
+        // TODO come back to this...
+        $this->lamplight_action = "";
+        $this->lamplight_method = "";
+
+        //$this->setUri($this->_baseUri);
+        //$this->resetParameters(false);
+
+        return $this;
     }
 
 
@@ -121,31 +141,24 @@ class Client {
      *
      * @param String        Field may be 'key', 'lampid', or 'project'
      * @param Mixed         Values provided by Lamplight admin
-     * @return Lamplight_Client
+     * @return Client
      */
-    public function setApiParameter ($field, $value) {
+    public function setApiParameter ($field, $value) : Client {
 
-        $keys = array('key', 'lampid', 'project');
-        if (in_array(strtolower($field), $keys)) {
-            $fieldKey = "_" . $field;
-            $this->{$fieldKey} = $value;
+        if ($field === 'key' && is_string($value)) {
+            $this->lamplight_key = $value;
+            return $this;
+        }
+        if ($field === 'lampid' && is_int($value)) {
+            $this->lamplight_id = $value;
+            return $this;
+        }
+
+        if ($field === 'project' && is_int($value)) {
+            $this->lamplight_project = $value;
         }
         return $this;
 
-    }
-
-
-    /**
-     * Clears GET parameters, but leaves API credentials.  Does not discard
-     * previous requests
-     * @return Lamplight_Client     Fluent interface
-     */
-    public function resetClient () {
-        $this->_lamplightAction = "";
-        $this->_lamplightMethod = "";
-        $this->setUri($this->_baseUri);
-        $this->resetParameters(false);
-        return $this;
     }
 
 
@@ -154,7 +167,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchWork () {
-        $this->_lamplightAction = "work";
+        $this->lamplight_action = "work";
         return $this;
     }
 
@@ -164,7 +177,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchPeople ($role = '') {
-        $this->_lamplightAction = "people";
+        $this->lamplight_action = "people";
         if (in_array($role, array('user', 'contact', 'staff', 'funder'))) {
             $this->setParameterGet("role", $role);
         }
@@ -176,7 +189,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchWorkarea () {
-        $this->_lamplightAction = "workarea";
+        $this->lamplight_action = "workarea";
         return $this;
     }
 
@@ -186,7 +199,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchOrgs ($role = '') {
-        $this->_lamplightAction = "orgs";
+        $this->lamplight_action = "orgs";
         if (in_array($role, array('user', 'contact', 'org', 'funder'))) {
             $this->setParameterGet("role", $role);
         }
@@ -200,7 +213,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchOne ($id = 0) {
-        $this->_lamplightMethod = "one";
+        $this->lamplight_method = "one";
         if ($id > 0) {
             $this->setParameterGet('id', $id);
         }
@@ -213,7 +226,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchSome () {
-        $this->_lamplightMethod = "some";
+        $this->lamplight_method = "some";
         return $this;
     }
 
@@ -223,7 +236,7 @@ class Client {
      * @return Lamplight_Client     Fluent interface
      */
     public function fetchAll () {
-        $this->_lamplightMethod = "all";
+        $this->lamplight_method = "all";
         return $this;
     }
 
@@ -302,8 +315,8 @@ class Client {
 
         $rec->beforeSave($this);
 
-        $this->_lamplightMethod = $rec->getLamplightMethod();
-        $this->_lamplightAction = $rec->getLamplightAction();
+        $this->lamplight_method = $rec->getLamplightMethod();
+        $this->lamplight_action = $rec->getLamplightAction();
         $this->setMethod('POST');
 
         $data = $rec->toAPIArray();
@@ -344,7 +357,7 @@ class Client {
      */
     protected function _attend ($emailOfAttendee) {
         $this->setMethod('POST');
-        $this->_lamplightMethod = "attend";
+        $this->lamplight_method = "attend";
         $this->setParameterPost('attendee', $emailOfAttendee);
         return $this;
     }
@@ -362,15 +375,15 @@ class Client {
      * @return String   Last method used (one|some|all)
      */
     public function getLastLamplightMethod () {
-        return $this->_lastMethod;
+        return $this->last_lamplight_method_sent;
     }
 
     /**
      * Retrieves the action used in the last request (work|people|orgs|workarea)
      * @return String  Last action used
      */
-    public function getLastLamplightAction () {
-        return $this->_lastAction;
+    public function getLamplightAction () {
+        return $this->last_lamplight_action;
     }
 
     /**
@@ -391,7 +404,7 @@ class Client {
      */
     public function request ($method = null) {
 
-        if (!($this->_key && $this->_lampid && $this->_project)) {
+        if (!($this->lamplight_key && $this->lamplight_id && $this->lamplight_project)) {
             require_once("Zend/Http/Client/Exception.php");
             throw new Zend_Http_Client_Exception("Lamplight API access parameters have not been set");
         }
@@ -401,9 +414,9 @@ class Client {
         $this->_constructUri();
 
         // Now add the API authentication parameters
-        $this->setParameterGet('key', $this->_key);
-        $this->setParameterGet('lampid', $this->_lampid);
-        $this->setParameterGet('project', $this->_project);
+        $this->setParameterGet('key', $this->lamplight_key);
+        $this->setParameterGet('lampid', $this->lamplight_id);
+        $this->setParameterGet('project', $this->lamplight_project);
 
         return parent::request($method);
 
@@ -451,17 +464,17 @@ class Client {
         $uri = $this->getUri(true);
         //    if ($uri == $this->_baseUri) {
 
-        if (!($this->_lamplightAction && $this->_lamplightMethod)) {
+        if (!($this->lamplight_action && $this->lamplight_method)) {
             require_once("Zend/Http/Client/Exception.php");
             throw new Zend_Http_Client_Exception("You need to specify what you want to request, and how many of them");
         }
 
-        $uri .= $this->_lamplightAction . '/';
-        $uri .= $this->_lamplightMethod . '/';
+        $uri .= $this->lamplight_action . '/';
+        $uri .= $this->lamplight_method . '/';
         $uri .= 'format/json';
 
-        $this->_lastAction = $this->_lamplightAction;
-        $this->_lastMethod = $this->_lamplightMethod;
+        $this->last_lamplight_action = $this->lamplight_action;
+        $this->last_lamplight_method_sent = $this->lamplight_method;
 
         $this->setUri($uri);
 
