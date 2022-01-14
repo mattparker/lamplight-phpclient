@@ -85,4 +85,11 @@ class ReferralTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     }
 
+
+    public function test_action_and_method () {
+        $sut = new Referral();
+        $this->assertEquals('add', $sut->getLamplightMethod());
+        $this->assertEquals('referral', $sut->getLamplightAction());
+    }
+
 }
