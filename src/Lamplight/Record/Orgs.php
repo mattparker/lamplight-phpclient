@@ -11,7 +11,7 @@ namespace Lamplight\Record;
  *
  * @category   Lamplight
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @history     1.2 Update to allow adding and updating people and org records
