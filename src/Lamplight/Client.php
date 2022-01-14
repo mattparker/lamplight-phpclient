@@ -3,7 +3,11 @@
 namespace Lamplight;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use Lamplight\RecordSet\NoRequestMadeToMakeRecordsFromException;
+use Lamplight\Response\ErrorResponse;
+use Lamplight\Response\SuccessResponse;
 
 /**
  *
@@ -95,7 +99,7 @@ class Client {
     protected string $last_lamplight_action = '';
 
     /**
-     * @var
+     * @var Response
      */
     protected $last_response;
 
@@ -340,7 +344,7 @@ class Client {
      * @param String       Email address of person wanting to attend
      * @return Client    Fluent interface
      */
-    public function attendWork (int $recordid, $emailOfAttendee) : Client {
+    public function attendWork ($recordid, $emailOfAttendee) : Client {
         // this is work
         $this->fetchWork();
         $this->setParameterPost('id', $recordid);
@@ -466,13 +470,19 @@ class Client {
         if ($this->http_method === 'GET') {
             $params = ['query' => $this->query_params];
         } else {
-            $params = $this->form_params;
+            $params = ['query' => $this->query_params, 'form_params' => $this->form_params];
         }
 
         // TODO $response may need a new class to reflect previous API
-        $response = $this->client->request($this->http_method, $uri, $params);
+        try {
+            $response = $this->client->request($this->http_method, $uri, $params);
+            $lamplight_response = new Response\SuccessResponse($response);
 
-        $lamplight_response = new Response($response);
+        } catch (ClientException|GuzzleException $client_exception) {
+
+            $lamplight_response = new ErrorResponse($client_exception->getCode(), $client_exception->getMessage());
+
+        }
 
         $this->last_response = $lamplight_response;
         return $lamplight_response;

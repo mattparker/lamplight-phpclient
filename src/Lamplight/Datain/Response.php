@@ -1,11 +1,15 @@
 <?php
 namespace Lamplight\Datain;
 
+use Lamplight\Client;
+use Lamplight\Datain\Exception\LastRequestWasNotDataInException;
+use Lamplight\Response\SuccessResponse;
+
 /**
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
@@ -13,32 +17,34 @@ namespace Lamplight\Datain;
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Update for add profile functionality
+ * @history     1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @history     1.2 Update for add profile functionality
+ * @version    2.0 New version
  */
 
 
 /**
  *
  *
- * Lamplight_Datain_Response provides a wrapper for responses from the Lamplight datain API
+ * Lamplight\Datain\Response provides a wrapper for responses from the Lamplight datain API
  * module to provide convenient access.
  * @category   Lamplight
- * @package    Lamplight_Client
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @package    Lamplight\Client
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Fix for minor bug in success() checking
+ * @history    1.2 Fix for minor bug in success() checking
+ * @version    2.0 New version
  * @link       http://www.lamplight-publishing.co.uk/examples/addreferral.php  Worked examples and documentation for
  *     using the client library
  *
  *
  */
-class Response implements \Iterator {
+class Response extends SuccessResponse implements \Iterator {
 
     /**
-     * @var Zend_Http_Response          The response created
+     * @var SuccessResponse          The response created
      */
     protected $_response;
 
@@ -54,17 +60,17 @@ class Response implements \Iterator {
     protected $_responseHttpStatus = null;
 
     /**
-     * @var Array                       If we add to multiple records at once,
+     * @var array                       If we add to multiple records at once,
      *                                  we create a Lamplight_Datain_Response
      *                                  for each record, and use the parent
      *                                  to hold and iterate through the children
      */
-    protected $_responseChildren = array();
+    protected array $_responseChildren = array();
 
     /**
      * @var Int                         Internal array pointer for multiple ones
      */
-    protected $_responseChildrenPointer = 0;
+    protected int $_responseChildrenPointer = 0;
 
     /**
      * @var Boolean                     Whether this is an add multi
@@ -72,12 +78,12 @@ class Response implements \Iterator {
     protected $_isMultiple = null;
 
     /**
-     * @var Lamplight_Datain_Response
+     * @var Response
      */
     protected $_parentResponse = null;
 
     /**
-     * @var Lamplight_Client            The Lamplight client used for the request
+     * @var Client            The Lamplight client used for the request
      */
     protected $_client;
 
@@ -96,13 +102,16 @@ class Response implements \Iterator {
      */
     protected $_errorMessage = null;
 
+    protected int $_id = 0;
+
 
     /**
      * Wrapper for the response, providing some easier to use
      * methods for datain responses
-     * @param Lamplight_Client                The Lamplight client wrapping the request
+     * @param Client|null $client
+     * @param Response|null $parent
      */
-    public function __construct (Lamplight_Client $client = null, Lamplight_Datain_Response $parent = null) {
+    public function __construct (Client $client = null, Response $parent = null) {
 
 
         if ($client) {
@@ -120,10 +129,10 @@ class Response implements \Iterator {
 
     /**
      * Sets the client
-     * @param Lamplight_Client
-     * @return Lamplight_Datain_Response
+     * @param Client $client
+     * @return Response
      */
-    public function setClient (Lamplight_Client $client) {
+    public function setClient (Client $client) {
 
         // check last request was a datain one:
         $validDataMethod = array("attend");
@@ -141,7 +150,7 @@ class Response implements \Iterator {
 
         if (!in_array($ma, $validMA)) {
 
-            throw new Exception("The last request was not a datain one.");
+            throw new LastRequestWasNotDataInException("The last request was not a datain one.");
 
         }
 
@@ -151,6 +160,8 @@ class Response implements \Iterator {
         // Work out if we did lots of datain's, and if so set up
         // a child response for each
         $this->_handleMultiples();
+
+        return $this;
 
     }
 
@@ -167,13 +178,13 @@ class Response implements \Iterator {
 
     /**
      * Returns the json-decoded (as object) response from Lamplight
-     * @return Object
+     * @return array
      */
-    public function getJsonResponse () {
+    public function getJsonResponse () : ?\stdClass {
 
         if ($this->_responseJson === null) {
-            require_once 'Zend/Json.php';
-            $this->_responseJson = Zend_Json::decode($this->_response->getBody(), Zend_Json::TYPE_OBJECT);
+
+            $this->_responseJson = json_decode($this->_response->getBody()->getContents());//, Zend_Json::TYPE_OBJECT);
         }
         return $this->_responseJson;
     }
@@ -217,14 +228,13 @@ class Response implements \Iterator {
 
 
                 // check property exists and id matches originally passed id
-                if ($json && is_object($json) && property_exists($json, 'data')) {
+                if ($json && property_exists($json, 'data')) {
 
                     if (is_array($json->data)) {
 
                         // multiples: check each
 
-                    } else if (is_object($json->data)
-                        && property_exists($json->data, 'id')) {
+                    } else if (is_object($json->data) && property_exists($json->data, 'id')) {
 
 
                         // single record: if it has an id, does it match?
@@ -238,7 +248,7 @@ class Response implements \Iterator {
 
                         // single record: if it has an id, does it match?
                         if ($id > 0) {
-                            $this->_success = ($json->data->id == $id);
+                            $this->_success = ($json->data == $id);
                         } else {
                             $this->_success = true;
                         }
@@ -294,7 +304,7 @@ class Response implements \Iterator {
         if ($this->_error === null) {
 
             $json = $this->getJsonResponse();
-            if ($json && is_object($json) && property_exists($json, 'error')) {
+            if ($json && property_exists($json, 'error')) {
                 $this->_error = $json->error;
             }
         } else {
@@ -309,14 +319,14 @@ class Response implements \Iterator {
      * Gets the error message returned by Lamplight, if any
      * @return String | ''
      */
-    public function getErrorMessage () {
+    public function getErrorMessage () : string {
 
         if ($this->_errorMessage === null) {
 
             if ($this->getErrorCode()) {
 
                 $json = $this->getJsonResponse();
-                if ($json && is_object($json) && property_exists($json, 'msg')) {
+                if ($json && property_exists($json, 'msg')) {
 
                     $this->_errorMessage = $json->msg;
 
@@ -346,19 +356,19 @@ class Response implements \Iterator {
             $type = $client->getLastLamplightAction();
 
             // check property exists and id matches originally passed id
-            if ($json && is_object($json) && property_exists($json, 'data')) {
+            if ($json && property_exists($json, 'data')) {
 
                 // this is the multiple one:
                 if (is_array($json->data)) {
 
                     foreach ($json->data as $rec) {
 
-                        $child = new Lamplight_Datain_Response(null, $this);
+                        $child = new Response(null, $this);
                         $child->_overRide(
                             array(
                                 'id' => $rec->id,
                                 'success' => $rec->attend,
-                                'error' => (property_exists($rec, 'error') ? $rec->error > 0 : false),
+                                'error' => (property_exists($rec, 'error') && $rec->error > 0),
                                 'errorMessage' => (property_exists($rec, 'msg') ? $rec->msg : ''),
                                 'responseJson' => $rec
                             ),
@@ -382,7 +392,7 @@ class Response implements \Iterator {
 
 
     // Undocumented method to allow parent to set child properties.
-    public function _overRide (array $data = array(), Lamplight_Datain_Response $resp) {
+    public function _overRide (array $data = [], Response $resp) {
 
         // Only the parent can override
         if ($resp !== $this->_parentResponse) {
@@ -413,7 +423,7 @@ class Response implements \Iterator {
     }
 
     /**
-     * @return Mixed
+     * @return Response
      */
     public function current () {
         $k = array_keys($this->_responseChildren);

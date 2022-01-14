@@ -2,6 +2,7 @@
 namespace Lamplight\Record;
 use Lamplight\Client;
 use Lamplight\Response;
+use Lamplight\Response\SuccessResponse;
 
 /**
  *
@@ -77,8 +78,8 @@ abstract class Mutable extends BaseRecord {
      * Called by Lamplight_Client::save() just after the request()
      * and before it returns.
      * Provided for implementing class if required
-     * @param Client
-     * @param Response
+     * @param Client $client
+     * @param Response $response
      */
     public function afterSave (Client $client, Response $response) {
     }

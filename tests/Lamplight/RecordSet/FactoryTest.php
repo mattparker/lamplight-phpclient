@@ -5,7 +5,7 @@ namespace Lamplight\RecordSet;
 use Mockery as m;
 use Lamplight\Client;
 use Lamplight\Record\WorkareaSummary;
-use Lamplight\Response;
+use Lamplight\Response\SuccessResponse;
 use Psr\Http\Message\StreamInterface;
 
 class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
@@ -31,7 +31,7 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     protected function prepareResponse (int $status, bool $is_error, ?string $body_content) {
 
-        $response = m::mock(Response::class);
+        $response = m::mock(SuccessResponse::class);
         $response->shouldReceive('getStatus')->andReturn($status);
         $response->shouldReceive('getBody')
             ->andReturn($mock_body = m::mock(StreamInterface::class));

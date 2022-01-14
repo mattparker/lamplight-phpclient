@@ -6,6 +6,7 @@ use Lamplight\Client;
 use Lamplight\Record\BaseRecord;
 use Lamplight\RecordSet;
 use Lamplight\Response;
+use Lamplight\Response\SuccessResponse;
 
 /**
  * Makes a RecordSet from the last request made by the Client

@@ -2,6 +2,7 @@
 
 namespace Lamplight;
 
+use Lamplight\Response\SuccessResponse;
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
@@ -10,7 +11,7 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
 
 
     /**
-     * @var Response
+     * @var SuccessResponse
      */
     protected $sut;
     /**
@@ -20,7 +21,7 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     public function setUp (): void {
         $this->guzzle_response = m::mock(ResponseInterface::class);
-        $this->sut = new Response($this->guzzle_response);
+        $this->sut = new SuccessResponse($this->guzzle_response);
     }
 
 
