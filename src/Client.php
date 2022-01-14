@@ -124,7 +124,11 @@ class Client {
      * @param GuzzleClient
      * @param array          Config options ['lampid' => 123, 'project' => 1, 'key' => '<api key from Lamplight>']
      */
-    public function __construct (GuzzleClient $client, $config) {
+    public function __construct (GuzzleClient $client = null, array $config = []) {
+
+        if (!$client) {
+            $client = new GuzzleClient();
+        }
 
         // Allow setting of API key details at construction:
         foreach (['key', 'lampid', 'project'] as $key) {
@@ -446,7 +450,6 @@ class Client {
     public function request () {
 
         if (!($this->lamplight_key && $this->lamplight_id && $this->lamplight_project)) {
-            require_once("Zend/Http/Client/Exception.php");
             throw new \Exception("Lamplight API access parameters have not been set");
         }
 
@@ -519,7 +522,7 @@ class Client {
             throw new \Exception("You need to specify what you want to request, and how many of them");
         }
 
-        $uri .= $this->lamplight_action . '/' . $this->lamplight_method . '/' . 'format/json';
+        $uri .= $this->lamplight_action . '/' . $this->lamplight_method . '/format/json';
 
         $this->last_lamplight_action = $this->lamplight_action;
         $this->last_lamplight_method_sent = $this->lamplight_method;
