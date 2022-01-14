@@ -171,13 +171,13 @@ class Client {
             $this->lamplight_key = $value;
             return $this;
         }
-        if ($field === 'lampid' && is_int($value)) {
-            $this->lamplight_id = $value;
+        if ($field === 'lampid' && $value > 0) {
+            $this->lamplight_id = (int)$value;
             return $this;
         }
 
-        if ($field === 'project' && is_int($value)) {
-            $this->lamplight_project = $value;
+        if ($field === 'project' && $value > 0) {
+            $this->lamplight_project = (int)$value;
         }
         return $this;
 
@@ -447,7 +447,7 @@ class Client {
      * Sets Lamplight API key parameters before request
 
      */
-    public function request () {
+    public function request () : Response {
 
         if (!($this->lamplight_key && $this->lamplight_id && $this->lamplight_project)) {
             throw new \Exception("Lamplight API access parameters have not been set");
@@ -463,7 +463,7 @@ class Client {
         $this->setParameterGet('project', $this->lamplight_project);
 
         if ($this->http_method === 'GET') {
-            $params = $this->query_params;
+            $params = ['query' => $this->query_params];
         } else {
             $params = $this->form_params;
         }
@@ -471,8 +471,10 @@ class Client {
         // TODO $response may need a new class to reflect previous API
         $response = $this->client->request($this->http_method, $uri, $params);
 
-        $this->last_response = $response;
-        return $response;
+        $lamplight_response = new Response($response);
+
+        $this->last_response = $lamplight_response;
+        return $lamplight_response;
 
     }
 

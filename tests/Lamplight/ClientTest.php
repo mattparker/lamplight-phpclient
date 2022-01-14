@@ -43,12 +43,15 @@ class ClientTest extends m\Adapter\Phpunit\MockeryTestCase {
                 'GET',
                 'https://lamplight.online/api/workarea/all/format/json',
                 [
-                    'key' => 'abc123',
-                    'lampid' => 144,
-                    'project' => 2
+                    'query' => [
+                        'key' => 'abc123',
+                        'lampid' => 144,
+                        'project' => 2
+                    ]
                 ]
             )->andReturn($response);
 
         $this->sut->fetchWorkarea()->fetchAll()->request();
     }
+
 }
