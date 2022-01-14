@@ -3,6 +3,7 @@
 namespace Lamplight;
 
 use GuzzleHttp\Client as GuzzleClient;
+use Lamplight\RecordSet\NoRequestMadeToMakeRecordsFromException;
 
 /**
  *
@@ -482,28 +483,21 @@ class Client {
     /**
      * Returns the last response as a Lamplight_RecordSet
      * which by default will contain instances of (one of):
-     *  - Lamplight_Record_WorkSummary
-     *  - Lamplight_Record_Work
-     *  - Lamplight_Record_PeopleSummary
-     *  - Lamplight_Record_People
-     *  - Lamplight_Record_OrgsSummary
-     *  - Lamplight_Record_Orgs
-     *  - Lamplight_Record_WorkareaSummary
+     *  - Lamplight\Record\WorkSummary
+     *  - Lamplight\Record\Work
+     *  - Lamplight\Record\PeopleSummary
+     *  - Lamplight\Record\People
+     *  - Lamplight\Record\OrgsSummary
+     *  - Lamplight\Record\Orgs
+     *  - Lamplight\Record\WorkareaSummary
      * depending on the last request.
      *
      * @param String            Class name to use for Records, overriding the default.
      * @return RecordSet  RecordSet containing Records
-     * @throws \Exception
+     * @throws NoRequestMadeToMakeRecordsFromException
      */
     public function getRecordSet ($recordClassName = '') : RecordSet {
-
-        $resp = $this->getLastResponse();
-        if ($resp === null) {
-            throw new \Exception("Response not available (not stored or not requested");
-        }
-
         return RecordSet::factory($this, $recordClassName);
-
     }
 
     /**

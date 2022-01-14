@@ -1,22 +1,23 @@
 <?php
 namespace Lamplight;
-use Lamplight\Record\BaseRecord;
+
 use Lamplight\RecordSet\Factory;
 
 /**
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
  * @category   Lamplight
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Update for add profile functionality
+ * @history    1.2 Update for add profile functionality
+ * @version    2.0 Refactored and updated
  */
 
 
@@ -28,11 +29,12 @@ use Lamplight\RecordSet\Factory;
  * Lamplight_Client request object.
  * @category   Lamplight
  * @package    Lamplight_Record
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Update for add profile functionality, and better handling of fetchOne() requests
+ * @history    1.2 Update for add profile functionality, and better handling of fetchOne() requests
+ * @version    2.0 Refactored and updated
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
  *     client library
  *
@@ -101,6 +103,7 @@ class RecordSet implements \Iterator {
      * If there was a problem of some sort
      *    with the request, there won't be any records and getErrors() will
      *    provide more info: check errors before proceeding.
+     *
      * @param Client $client Client that's made a request already
      * @param string $recordClass Name of the class to use for records
      *                                      (over-rides default based on request type)
