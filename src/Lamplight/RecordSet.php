@@ -1,6 +1,7 @@
 <?php
 namespace Lamplight;
 
+use Lamplight\Record\BaseRecord;
 use Lamplight\RecordSet\Factory;
 
 /**
@@ -223,26 +224,27 @@ class RecordSet implements \Iterator {
 
 
     /**
-     * Iterates throught the records, rendering each in turn using $template
+     * Iterates through the records, rendering each in turn using $template
      * (overriding template previously set using setRecordTemplate), or
      * using the template previously set if no argument passed.
-     * @param String
+     * @param string $template
+     * @param string $separator
      * @return String
      * @see setRecordTemplate
      */
-    public function render ($template = '') : string {
+    public function render (string $template = '', string $separator = '') : string {
 
         if ($template !== '') {
             $this->setRecordTemplate($template);
         }
         $template = $this->getRecordTemplate();
-        $ret = '';
+        $ret = [];
 
         foreach ($this as $rec) {
-            $ret .= $rec->render($template);
+            $ret[] = $rec->render($template);
         }
 
-        return $ret;
+        return implode($separator, $ret);
 
     }
 
@@ -271,7 +273,7 @@ class RecordSet implements \Iterator {
     }
 
     /**
-     * @return Mixed
+     * @return BaseRecord
      */
     public function current () {
         $k = array_keys($this->records);

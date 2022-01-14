@@ -100,7 +100,10 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertEquals(0, $record_set->getErrorCode());
         $this->assertEquals('', $record_set->getErrorMessage());
         $this->assertEquals(200, $record_set->getResponseStatus());
-        $this->assertEquals('1, Sports and games Table tennis3, sunbathing4, Learning and Education', $record_set->render());
+        $this->assertEquals(
+            '1, Sports and games, 2, Table tennis, 3, sunbathing, 4, Learning and Education, ',
+            $record_set->render('', ', ')
+        );
 
         $record_set->rewind();
         $record = $record_set->current();

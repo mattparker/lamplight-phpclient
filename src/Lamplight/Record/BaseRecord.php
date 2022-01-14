@@ -66,8 +66,27 @@ abstract class BaseRecord implements \Iterator {
         if (!$data) {
             $data = [];
         }
-        $this->data = $data;
+        foreach ($data as $key => $value) {
+            $this->set($key, $value);
+        }
 
+    }
+
+    /**
+     * Sets values on $this->data, but allows for setters in child classes to be called if needed
+     *
+     * @param $key
+     * @param $value
+     * @return BaseRecord Fluent interface
+     */
+    public function set ($key, $value) : BaseRecord {
+        $method_name = 'set' . ucfirst($key);
+        if (method_exists($this, $method_name) && is_callable([$this, $method_name])) {
+            call_user_func([$this, $method_name], $value);
+            return $this;
+        }
+        $this->data[$key] = $value;
+        return $this;
     }
 
 
@@ -143,7 +162,7 @@ abstract class BaseRecord implements \Iterator {
      *
      * @return string
      */
-    public function renderField ($field) {
+    public function renderField ($field) : string {
 
         $val = $this->get($field);
         if (is_array($val)) {

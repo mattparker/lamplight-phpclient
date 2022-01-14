@@ -1,19 +1,22 @@
 <?php
 namespace Lamplight\Record;
+use Lamplight\Record\Exception\MissingAttendeeException;
+
 /**
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
  * @category   Lamplight
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.2 Add/edit profile functionality
+ * @history     1.2 Add/edit profile functionality
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
+ * @version    2.0 New version
  */
 
 
@@ -27,7 +30,8 @@ namespace Lamplight\Record;
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.2 Refactory to extend Lamplight_Record_Mutable
+ * @version    2.0 New version
+ * @history    1.2 Refactory to extend Lamplight_Record_Mutable
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
  *     client library
@@ -44,41 +48,38 @@ class Referral extends Mutable {
      * via the API
      * @param bool
      */
-    protected $_editable = true;
+    protected bool $editable = true;
 
 
     /**
      * @var string        The method used for sending requests via the API
      */
-    protected $_lamplightMethod = 'add';
+    protected string $lamplightMethod = 'add';
 
     /**
      * @var string        The action used for sending requests via the API
      */
-    protected $_lamplightAction = 'referral';
+    protected string $lamplightAction = 'referral';
 
 
     /**
      * Sets the date of the referral.  If none passed, today
-     * is set
+     * is set.
      *
-     * @param string $date In YYYY-mm-dd HH:ii:ss format
+     * @param string|\DateTimeInterface $date In YYYY-mm-dd HH:ii:ss format
      *
-     * @return Lamplight_Record_Referral
-     * @throws Exception
+     * @return Referral
      */
-    public function setDate ($date = '') {
-
-        if (!is_string($date)) {
-            throw new Exception("Date must be a string");
-        }
+    public function setDate ($date = '') : Referral {
 
         if (!$date) {
             $date = date('Y-m-d H:i:s');
+        } else if ($date instanceof \DateTimeInterface) {
+            $date = $date->format('Y-m-d H:i:s');
         } else {
             $date = date('Y-m-d H:i:s', strtotime($date));
         }
-        $this->data->date = $date;
+        $this->data['date'] = $date;
         return $this;
 
     }
@@ -88,14 +89,10 @@ class Referral extends Mutable {
      *
      * @param string $reason
      *
-     * @return Lamplight_Record_Referral
-     * @throws Exception
+     * @return Referral
      */
-    public function setReason ($reason = '') {
-        if (!is_string($reason)) {
-            throw new Exception("Referral reason must be a string");
-        }
-        $this->data->reason = (string)$reason;
+    public function setReason (string $reason = '') : Referral {
+        $this->data['reason'] = $reason;
         return $this;
     }
 
@@ -105,12 +102,12 @@ class Referral extends Mutable {
      * Used by Lamplight_Client
      *
      * @return array
-     * @throws Exception
+     * @throws MissingAttendeeException
      */
-    public function toAPIArray () {
+    public function toAPIArray () : array {
 
         $built_ins = array('date', 'workarea', 'attendee', 'reason');
-        $ar = array(
+        $return_array = array(
             'date_from' => $this->get('date'),
             'workareaid' => $this->get('workarea'),
             'attendee' => $this->get('attendee'),
@@ -119,13 +116,13 @@ class Referral extends Mutable {
 
         foreach ($this->data as $fieldName => $fieldValue) {
             if (!in_array($fieldName, $built_ins)) {
-                $ar[$fieldName] = $fieldValue;
+                $return_array[$fieldName] = $fieldValue;
             }
         }
-        if ($ar['attendee'] == '') {
-            throw new Exception("Attendee has not been set but is not optional");
+        if ($return_array['attendee'] == '') {
+            throw new MissingAttendeeException("Attendee has not been set but is not optional");
         }
-        return $ar;
+        return $return_array;
     }
 
 }
