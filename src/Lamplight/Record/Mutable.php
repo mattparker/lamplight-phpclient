@@ -135,7 +135,7 @@ abstract class Mutable extends BaseRecord {
         if (method_exists($this, $methodName) && is_callable(array($this, $methodName))) {
             call_user_func(array($this, $methodName), $value);
         } else {
-            $this->_data->{$field} = $value;
+            $this->data->{$field} = $value;
         }
 
         return $this;
@@ -151,7 +151,7 @@ abstract class Mutable extends BaseRecord {
      */
     public function setAttendee ($attendee_identifier) {
         if ($this->_editable) {
-            $this->_data->attendee = $attendee_identifier;
+            $this->data->attendee = $attendee_identifier;
         }
         return $this;
     }
@@ -167,11 +167,11 @@ abstract class Mutable extends BaseRecord {
             return $this;
         }
         if (is_string($workareaID) && strstr($workareaID, ',')) {
-            $this->_data->workarea = $workareaID;
+            $this->data->workarea = $workareaID;
             return $this;
         }
         if (is_int($workareaID)) {
-            $this->_data->workarea = (int)$workareaID;
+            $this->data->workarea = (int)$workareaID;
         }
         return $this;
     }

@@ -7,16 +7,17 @@ use Lamplight\Client;
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
  * @category   Lamplight
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Update for add profile functionality
+ * @history    1.2 Update for add profile functionality
+ * @version    2.0 New version
  */
 
 
@@ -28,11 +29,12 @@ use Lamplight\Client;
  *
  * @category   Lamplight
  * @package    Lamplight_Record
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
- * @version    1.2 Minor changes for refactoring with Lamplight_Record_Mutable class
+ * @history    1.2 Minor changes for refactoring with Lamplight_Record_Mutable class
+ * @version    2.0 New version
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
  *             client library
  *
@@ -42,15 +44,15 @@ abstract class BaseRecord implements \Iterator {
 
 
     /**
-     * @var stdClass        Data for this record
+     * @var array        Data for this record
      */
-    protected $_data;
+    protected array $data = [];
 
 
     /**
      * @var int          Array pointer
      */
-    protected $_index = 0;
+    protected int $index = 0;
 
 
     /**
@@ -59,12 +61,12 @@ abstract class BaseRecord implements \Iterator {
      *
      * @param Object       stdClass object: properties are field names.
      */
-    public function __construct ($data = null) {
+    public function __construct (array $data = null) {
 
         if (!$data) {
-            $data = new stdClass();
+            $data = [];
         }
-        $this->_data = $data;
+        $this->data = $data;
 
     }
 
@@ -89,8 +91,12 @@ abstract class BaseRecord implements \Iterator {
      */
     public function get ($field) {
 
-        if (is_array($this->_data) && array_key_exists($field, $this->_data)) {
-            return trim($this->_data[$field]);
+        if (array_key_exists($field, $this->data)) {
+            if (is_string($this->data[$field])) {
+                return trim($this->data[$field]);
+            }
+            return $this->data[$field];
+
         }
 
         return '';
@@ -105,14 +111,14 @@ abstract class BaseRecord implements \Iterator {
      *
      * @return string
      */
-    public function render ($template = '') {
+    public function render (string $template = '') : string {
 
         // If no template, just return comma-separated string:
         if ($template == '') {
-            return self::implodeRecursive(", ", $this->_data);
+            return $this->implodeRecursive(", ", $this->data);
         }
 
-        preg_match_all("/\{([a-zA-Z0-9_]+)\}/", $template, $matches, PREG_PATTERN_ORDER);
+        preg_match_all("/{([a-zA-Z0-9_]+)}/", $template, $matches, PREG_PATTERN_ORDER);
 
         $ret = $template;
         if ($matches && $matches[1]) {
@@ -141,7 +147,7 @@ abstract class BaseRecord implements \Iterator {
 
         $val = $this->get($field);
         if (is_array($val)) {
-            $val = Lamplight_Record_Abstract::implodeRecursive(", ", $val);
+            $val = $this->implodeRecursive(", ", $val);
         }
 
         return htmlentities($val, ENT_QUOTES, "UTF-8");
@@ -152,22 +158,21 @@ abstract class BaseRecord implements \Iterator {
      * implode() like function, but recurses if elements are themselves arrays
      *
      * @param string $glue Separator
-     * @param array $pieces Of pieces to glue together
+     * @param array $data Of pieces to glue together
      *
      * @return string
      */
-    public static function implodeRecursive ($glue, iterable $pieces) {
+    public function implodeRecursive (string $glue, iterable $data) : string {
 
-        $r = '';
-        foreach ($pieces as $v) {
-            if (is_array($v)) {
-                $r .= self::implodeRecursive($glue, $v);
+        $escaped_strings = [];
+        foreach ($data as $value) {
+            if (is_array($value)) {
+                $escaped_strings[] = $this->implodeRecursive($glue, $value);
             } else {
-                $r .= $glue . $v;
+                $escaped_strings[] = htmlentities($value, ENT_QUOTES, "UTF-8");
             }
         }
-
-        return substr($r, strlen($glue));
+        return implode($glue, $escaped_strings);
 
     }
 
@@ -179,14 +184,14 @@ abstract class BaseRecord implements \Iterator {
      */
     public function count () {
 
-        return count($this->_data);
+        return count($this->data);
     }
 
 
     /////// Iterator methods
     public function rewind () {
 
-        $this->_index = 0;
+        $this->index = 0;
     }
 
     /**
@@ -194,8 +199,8 @@ abstract class BaseRecord implements \Iterator {
      */
     public function current () {
 
-        $k = array_keys($this->_data);
-        $var = $this->_data[$k[$this->_index]];
+        $k = array_keys($this->data);
+        $var = $this->data[$k[$this->index]];
 
         return $var;
     }
@@ -205,8 +210,8 @@ abstract class BaseRecord implements \Iterator {
      */
     public function key () {
 
-        $k = array_keys($this->_data);
-        $var = $k[$this->_index];
+        $k = array_keys($this->data);
+        $var = $k[$this->index];
 
         return $var;
     }
@@ -216,9 +221,9 @@ abstract class BaseRecord implements \Iterator {
      */
     public function next () {
 
-        $k = array_keys($this->_data);
-        if (isset($k[++$this->_index])) {
-            $var = $this->_data[$k[$this->_index]];
+        $k = array_keys($this->data);
+        if (isset($k[++$this->index])) {
+            $var = $this->data[$k[$this->index]];
 
             return $var;
         } else {
@@ -231,8 +236,8 @@ abstract class BaseRecord implements \Iterator {
      */
     public function valid () {
 
-        $k = array_keys($this->_data);
-        $var = isset($k[$this->_index]);
+        $k = array_keys($this->data);
+        $var = isset($k[$this->index]);
 
         return $var;
     }

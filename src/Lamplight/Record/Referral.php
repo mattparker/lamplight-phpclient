@@ -78,7 +78,7 @@ class Referral extends Mutable {
         } else {
             $date = date('Y-m-d H:i:s', strtotime($date));
         }
-        $this->_data->date = $date;
+        $this->data->date = $date;
         return $this;
 
     }
@@ -95,7 +95,7 @@ class Referral extends Mutable {
         if (!is_string($reason)) {
             throw new Exception("Referral reason must be a string");
         }
-        $this->_data->reason = (string)$reason;
+        $this->data->reason = (string)$reason;
         return $this;
     }
 
@@ -117,7 +117,7 @@ class Referral extends Mutable {
             'referral_reason' => $this->get('reason')
         );
 
-        foreach ($this->_data as $fieldName => $fieldValue) {
+        foreach ($this->data as $fieldName => $fieldValue) {
             if (!in_array($fieldName, $built_ins)) {
                 $ar[$fieldName] = $fieldValue;
             }

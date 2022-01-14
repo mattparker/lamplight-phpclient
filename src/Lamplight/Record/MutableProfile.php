@@ -96,7 +96,7 @@ class MutableProfile extends Mutable {
             'role' => $this->_role
         );
 
-        foreach ($this->_data as $fieldName => $fieldValue) {
+        foreach ($this->data as $fieldName => $fieldValue) {
             $ar[$fieldName] = $fieldValue;
         }
 
