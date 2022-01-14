@@ -1,10 +1,13 @@
 <?php
 namespace Lamplight\Record;
+use Lamplight\Client;
+use Lamplight\Response;
+
 /**
  *
  * Lamplight php API client
  *
- * Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * Code licensed under the BSD License:
  * http://www.lamplight-publishing.co.uk/license.php
  *
@@ -12,7 +15,8 @@ namespace Lamplight\Record;
  * @author     Matt Parker <matt@lamplightdb.co.uk>
  * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
- * @version    1.2   Adds ability to add/update people and organisation profiles
+ * @history    1.2   Adds ability to add/update people and organisation profiles
+ * @version    2.0 New version
  */
 
 
@@ -20,14 +24,16 @@ namespace Lamplight\Record;
 /**
  *
  *
- * Lamplight_Record_Mutable is an abstract extension of the base Record class to provide
+ * Lamplight\Record\Mutable is an abstract extension of the base Record class to provide
  * mutability - ie Records that may be altered via the API.
+ *
  * @category   Lamplight
  * @package    Lamplight_Record
- * @copyright  Copyright (c) 2010, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>
- * @version    1.2    Refactoring to separate out get and setting of data
+ * @history     1.2    Refactoring to separate out get and setting of data
+ * @version    2.0 New version
  * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the
  *     client library
  *
@@ -39,42 +45,42 @@ abstract class Mutable extends BaseRecord {
     /**
      * @var Boolean       Whether this type of record is editable
      */
-    protected $_editable = true;
+    protected bool $editable = true;
 
     /**
      * @var String        The method used for sending requests via the API
      */
-    protected $_lamplightMethod = '';
+    protected string $lamplightMethod = '';
 
     /**
      * @var String        The action used for sending requests via the API
      */
-    protected $_lamplightAction = '';
+    protected string $lamplightAction = '';
 
     /**
      * Gets all the data for an API call.
      * Used by Lamplight_Client
-     * @return Array
+     * @return array
      */
-    abstract public function toAPIArray ();
+    abstract public function toAPIArray () : array;
 
 
     /**
      * Called by Lamplight_Client::save() before any preparations are carried out.
      * Provided for implementing class if required
-     * @param Lamplight_Client
+     * @param Client
      */
-    public function beforeSave (Lamplight_Client $client) {
+    public function beforeSave (Client $client) {
     }
 
     /**
      * Called by Lamplight_Client::save() just after the request()
      * and before it returns.
      * Provided for implementing class if required
-     * @param Lamplight_Client
-     * @param Zend_Http_Response
+     * @param Client
+     * @param Response
      */
-    public function afterSave (Lamplight_Client $client, Zend_Http_Response $response) {
+    public function afterSave (Client $client, Response $response) {
     }
 
 
@@ -82,24 +88,24 @@ abstract class Mutable extends BaseRecord {
      * Used by Lamplight_Client to construct the URL
      * @return String
      */
-    public function getLamplightMethod () {
-        return $this->_lamplightMethod;
+    public function getLamplightMethod () : string {
+        return $this->lamplightMethod;
     }
 
     /**
      * Used by Lamplight_Client to construct the URL
      * @return String
      */
-    public function getLamplightAction () {
-        return $this->_lamplightAction;
+    public function getLamplightAction () : string {
+        return $this->lamplightAction;
     }
 
     /**
      * Is this type of record editable?
      * @return Boolean
      */
-    public function isEditable () {
-        return $this->_editable;
+    public function isEditable () : bool {
+        return $this->editable;
     }
 
 
@@ -116,16 +122,16 @@ abstract class Mutable extends BaseRecord {
      * _data object
      * @param String                 Name of the field
      * @param Mixed                  Value to set.
-     * @return Lamplight_Record_Abstract
+     * @return BaseRecord
      */
-    public function set ($field, $value) {
+    public function set ($field, $value) : BaseRecord {
 
 
-        if (!$this->_editable) {
-            throw new Exception("You cannot change this type of Record");
+        if (!$this->editable) {
+            throw new \Exception("You cannot change this type of Record");
         }
         if (!is_string($field)) {
-            throw new Exception("Fields to be set must be strings");
+            throw new \Exception("Fields to be set must be strings");
         }
 
 
@@ -135,7 +141,7 @@ abstract class Mutable extends BaseRecord {
         if (method_exists($this, $methodName) && is_callable(array($this, $methodName))) {
             call_user_func(array($this, $methodName), $value);
         } else {
-            $this->data->{$field} = $value;
+            $this->data[$field] = $value;
         }
 
         return $this;
@@ -146,32 +152,32 @@ abstract class Mutable extends BaseRecord {
     /**
      * Sets the attendee for this record (can only be one, currently)
      * @param string | int                Email address or profile ID
-     * @return Lamplight_Record_Abstract
+     * @return BaseRecord
      *
      */
-    public function setAttendee ($attendee_identifier) {
-        if ($this->_editable) {
-            $this->data->attendee = $attendee_identifier;
+    public function setAttendee ($attendee_identifier) : BaseRecord {
+        if ($this->editable) {
+            $this->data['attendee'] = $attendee_identifier;
         }
         return $this;
     }
 
     /**
-     * Sets the workarea for this record (can only be one, currently)
-     * @param Int                Workarea ID
-     * @return Lamplight_Record_Abstract
+     * Sets the workarea for this record
+     * @param Int                Workarea ID or comma separated string of IDs
+     * @return BaseRecord
      *
      */
-    public function setWorkarea ($workareaID) {
-        if (!$this->_editable) {
+    public function setWorkarea ($workareaID) : BaseRecord {
+        if (!$this->editable) {
             return $this;
         }
         if (is_string($workareaID) && strstr($workareaID, ',')) {
-            $this->data->workarea = $workareaID;
+            $this->data['workarea'] = $workareaID;
             return $this;
         }
         if (is_int($workareaID)) {
-            $this->data->workarea = (int)$workareaID;
+            $this->data['workarea'] = (int)$workareaID;
         }
         return $this;
     }

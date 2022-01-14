@@ -42,6 +42,6 @@ class People extends MutableProfile {
     /**
      * @var String        The action used for sending requests via the API
      */
-    protected $_lamplightAction = 'people';
+    protected string $lamplightAction = 'people';
 
 }
