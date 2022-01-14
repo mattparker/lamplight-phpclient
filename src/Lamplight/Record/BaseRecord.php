@@ -1,4 +1,6 @@
 <?php
+namespace Lamplight\Record;
+
 /**
  *
  * Lamplight php API client
@@ -34,7 +36,7 @@
  *
  *
  */
-abstract class Lamplight_Record_Abstract implements Iterator {
+abstract class BaseRecord implements \Iterator {
 
 
     /**

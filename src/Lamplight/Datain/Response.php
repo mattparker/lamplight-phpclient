@@ -1,4 +1,6 @@
 <?php
+namespace Lamplight\Datain;
+
 /**
  *
  * Lamplight php API client
@@ -33,7 +35,7 @@
  *
  *
  */
-class Lamplight_Datain_Response implements Iterator {
+class Response implements \Iterator {
 
     /**
      * @var Zend_Http_Response          The response created

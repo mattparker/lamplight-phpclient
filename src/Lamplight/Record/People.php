@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -16,8 +17,7 @@
 
  */
  
- 
-require_once 'Lamplight/Record/MutableProfile.php';
+
  
 /**
  *
@@ -36,7 +36,7 @@ require_once 'Lamplight/Record/MutableProfile.php';
  */
 
 
-class Lamplight_Record_People extends Lamplight_Record_MutableProfile {
+class People extends MutableProfile {
 
 
     /**

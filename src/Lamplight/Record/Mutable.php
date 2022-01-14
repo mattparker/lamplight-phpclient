@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -14,7 +15,7 @@
  * @version    1.2   Adds ability to add/update people and organisation profiles
  */
 
-require_once('Lamplight/Record/Abstract.php');
+
 
 /**
  *
@@ -32,7 +33,7 @@ require_once('Lamplight/Record/Abstract.php');
  *
  *
  */
-abstract class Lamplight_Record_Mutable extends Lamplight_Record_Abstract {
+abstract class Mutable extends BaseRecord {
 
 
     /**

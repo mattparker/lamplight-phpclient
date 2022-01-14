@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -15,9 +16,7 @@
  * @version    1.2 Add/edit profile functionality
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  */
- 
 
-require_once 'Lamplight/Record/Abstract.php'; 
  
 /**
  *
@@ -36,4 +35,4 @@ require_once 'Lamplight/Record/Abstract.php';
  */
 
 
-class Lamplight_Record_WorkSummary extends Lamplight_Record_Abstract {}
+class WorkSummary extends BaseRecord {}

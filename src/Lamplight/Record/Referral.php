@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -14,8 +15,6 @@
  * @version    1.2 Add/edit profile functionality
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  */
-
-require_once 'Lamplight/Record/Mutable.php';
 
 
 /**
@@ -37,7 +36,7 @@ require_once 'Lamplight/Record/Mutable.php';
  *
  *
  */
-class Lamplight_Record_Referral extends Lamplight_Record_Mutable {
+class Referral extends Mutable {
 
 
     /**

@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -16,8 +17,7 @@
  */
  
  
- 
-require_once 'Lamplight/Record/Abstract.php';
+
 /**
  *
  *
@@ -36,4 +36,4 @@ require_once 'Lamplight/Record/Abstract.php';
 
 
 
-class Lamplight_Record_OrgsSummary extends Lamplight_Record_Abstract {}
+class OrgsSummary extends BaseRecord {}

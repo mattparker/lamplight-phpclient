@@ -429,7 +429,7 @@ class Client {
      * Retrieves the action used in the last request (work|people|orgs|workarea)
      * @return String  Last action used
      */
-    public function getLamplightAction () {
+    public function getLastLamplightAction () {
         return $this->last_lamplight_action;
     }
 
@@ -492,23 +492,25 @@ class Client {
      * depending on the last request.
      *
      * @param String            Class name to use for Records, overriding the default.
-     * @return \Lamplight\RecordSet  RecordSet containing Records
+     * @return RecordSet  RecordSet containing Records
      * @throws \Exception
      */
-    public function getRecordSet ($recordClassName = '') {
+    public function getRecordSet ($recordClassName = '') : RecordSet {
 
         $resp = $this->getLastResponse();
         if ($resp === null) {
             throw new \Exception("Response not available (not stored or not requested");
         }
 
-        require_once 'Lamplight/RecordSet.php';
-        return \Lamplight\RecordSet::factory($this, $recordClassName);
+        return RecordSet::factory($this, $recordClassName);
 
     }
 
-    public function getLastResponse () {
-        return $this->last_reponse;
+    /**
+     * @return Response|null
+     */
+    public function getLastResponse () : ?Response {
+        return $this->last_response;
     }
 
     /**

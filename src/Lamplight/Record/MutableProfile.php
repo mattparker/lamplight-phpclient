@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight\Record;
 /**
  *
  * Lamplight php API client
@@ -16,9 +17,6 @@
  *             adds profile-specific methods for editing.
  */
 
-
-require_once 'Lamplight/Record/Mutable.php';
-
 /**
  *
  *
@@ -35,7 +33,7 @@ require_once 'Lamplight/Record/Mutable.php';
  *
  *
  */
-class Lamplight_Record_MutableProfile extends Lamplight_Record_Mutable {
+class MutableProfile extends Mutable {
 
 
     /**

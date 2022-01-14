@@ -1,4 +1,5 @@
 <?php
+namespace Lamplight;
 /**
  *
  * Lamplight php API client
@@ -33,7 +34,7 @@
  *     client library
  *
  */
-class Lamplight_RecordSet implements Iterator {
+class RecordSet implements \Iterator {
 
 
     /**
@@ -44,7 +45,7 @@ class Lamplight_RecordSet implements Iterator {
 
     /**
      * Array of Lamplight_Record_* instances
-     * @var Array
+     * @var array
      */
     protected $_records = array();
 
@@ -91,7 +92,7 @@ class Lamplight_RecordSet implements Iterator {
 
     /**
      * Constructor: called by factory method
-     * @param Array     Array of Lamplight_Record_* instances
+     * @param array     Array of Lamplight_Record_* instances
      */
     protected function __construct (array $records = array()) {
         $this->_records = $records;
@@ -104,12 +105,12 @@ class Lamplight_RecordSet implements Iterator {
      * If there was a problem of some sort
      *    with the request, there won't be any records and getErrors() will
      *    provide more info: check errors before proceeding.
-     * @param Lamplight_Client $client Client that's made a request already
-     * @param String $recordClass Name of the class to use for records
+     * @param Client $client Client that's made a request already
+     * @param string $recordClass Name of the class to use for records
      *                                      (over-rides default based on request type)
-     * @return Lamplight_RecordSet
+     * @return RecordSet
      */
-    public static function factory (Lamplight_Client $client, $recordClass = '') {
+    public static function factory (Client $client, string $recordClass = '') : RecordSet {
 
         $action = $client->getLastLamplightMethod();
         $method = $client->getLastLamplightAction();
@@ -157,7 +158,7 @@ class Lamplight_RecordSet implements Iterator {
         }
 
         // Construct the RecordSet:
-        $rs = new Lamplight_RecordSet($records);
+        $rs = new RecordSet($records);
         $rs->setErrors($errors);
         $rs->setResponseStatus($status);
 
@@ -218,10 +219,10 @@ class Lamplight_RecordSet implements Iterator {
         switch ($format) {
             case 'json':
             default:
-                require_once 'Zend/Json.php';
+
                 try {
-                    return Zend_Json::decode($data, Zend_Json::TYPE_OBJECT);
-                } catch (Exception $e) {
+                    return json_decode($data);
+                } catch (\Exception $e) {
                     return false;
                 }
                 break;
@@ -251,7 +252,7 @@ class Lamplight_RecordSet implements Iterator {
      * Set the error code returned by the server
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
      * @param Int
-     * @return Lamplight_RecordSet      Fluent interface
+     * @return RecordSet      Fluent interface
      */
     public function setErrorCode ($c) {
         $this->_errorCode = $c;
@@ -273,7 +274,7 @@ class Lamplight_RecordSet implements Iterator {
      * Set the error code message by the server
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
      * @param String
-     * @return Lamplight_RecordSet      Fluent interface
+     * @return RecordSet      Fluent interface
      */
     public function setErrorMessage ($msg) {
         $this->_errorMessage = $msg;
@@ -295,7 +296,7 @@ class Lamplight_RecordSet implements Iterator {
      * Get the http response status returned by the server
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
      * @param Int
-     * @return Lamplight_RecordSet      Fluent interface
+     * @return RecordSet      Fluent interface
      */
     public function setResponseStatus ($status) {
         $this->_responseStatus = $status;
@@ -319,7 +320,7 @@ class Lamplight_RecordSet implements Iterator {
      * enclosed in {} braces, using the expression found as the field
      * identifier e.g. <div>Name: {name}</div><div>ID: {id}</div>
      * @param String $template Template to use for records
-     * @return Lamplight_RecordSet      Fluent interface
+     * @return RecordSet      Fluent interface
      */
     public function setRecordTemplate ($template) {
         $this->_recordTemplate = $template;
