@@ -88,4 +88,22 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     }
 
+
+    public function test_response_error_code () {
+
+        $this->guzzle_response->shouldReceive('getStatusCode')->andReturn(400);
+        $this->assertEquals(400, $this->sut->getStatusCode());
+        $this->assertTrue($this->sut->isError());
+        $this->assertFalse($this->sut->isSuccessful());
+    }
+
+
+    public function test_response_success_code () {
+
+        $this->guzzle_response->shouldReceive('getStatusCode')->andReturn(201);
+        $this->assertEquals(201, $this->sut->getStatusCode());
+        $this->assertFalse($this->sut->isError());
+        $this->assertTrue($this->sut->isSuccessful());
+    }
+
 }

@@ -27,6 +27,49 @@ class Response implements ResponseInterface {
         $this->guzzle_response = $guzzle_response;
     }
 
+
+    /*
+     * Methods implementing previous \Zend_Http_Response methods commonly used
+     */
+    /**
+     * @return int
+     */
+    public function getStatus () : int {
+        return $this->getStatusCode();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isError () : bool {
+        $first_digit = $this->getFirstDigitOfStatus();
+        return ($first_digit == 4 || $first_digit == 5);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful () : bool {
+        $first_digit = $this->getFirstDigitOfStatus();
+        return ($first_digit == 2 || $first_digit == 1);
+    }
+
+    /**
+     * @return float
+     */
+    protected function getFirstDigitOfStatus () {
+        return floor($this->getStatusCode() / 100);
+    }
+
+
+
+
+
+
+    /*
+     * Pass through methods of interface
+     */
+
     /**
      * @return string
      */

@@ -41,53 +41,53 @@ class RecordSet implements \Iterator {
      * True if there were errors getting data from response
      * @var  Boolean
      */
-    protected $_errors = false;
+    protected bool $errors = false;
 
     /**
      * Array of Lamplight_Record_* instances
      * @var array
      */
-    protected $_records = array();
+    protected array $records = array();
 
 
     /**
      * Error code returned by server or locally
      * @var Int
      */
-    protected $_errorCode = 0;
+    protected int $error_code = 0;
 
     /**
      * Error message returned by server or locally
      * @var String
      */
-    protected $_errorMessage = '';
+    protected string $error_message = '';
 
     /**
      * HTTP response status
      * @var Int
      */
-    protected $_responseStatus = 0;
+    protected int $response_status = 0;
 
 
     /**
      *  Array pointer
      * @var Int
      */
-    protected $_index = 0;
+    protected int $index = 0;
 
 
     /**
      *  Template used to render Records
      * @var String
      */
-    protected $_recordTemplate = '';
+    protected string $record_template = '';
 
 
     /**
      * Base record class, used when constructing Records from the data
      * @var String
      */
-    protected static $_baseRecordClassName = 'Lamplight_Record';
+    protected static string $baseRecordClassName = 'Lamplight_Record';
 
 
     /**
@@ -95,7 +95,7 @@ class RecordSet implements \Iterator {
      * @param array     Array of Lamplight_Record_* instances
      */
     protected function __construct (array $records = array()) {
-        $this->_records = $records;
+        $this->records = $records;
     }
 
 
@@ -128,8 +128,6 @@ class RecordSet implements \Iterator {
             if ($recordClass == '') {
                 $recordClass = self::_buildRecordClassName($action, $method);
             }
-            require_once str_replace('_', '/', $recordClass) . '.php';
-
             $data = self::_parseResponseBody($resp->getBody(), $format);
 
             if ($data === false) {
@@ -198,7 +196,7 @@ class RecordSet implements \Iterator {
      */
     protected static function _buildRecordClassName ($action, $method) {
 
-        $class = self::$_baseRecordClassName . '_' . ucfirst($method);
+        $class = self::$baseRecordClassName . '_' . ucfirst($method);
         if ($action != 'one') {
             $class .= 'Summary';
         }
@@ -212,7 +210,7 @@ class RecordSet implements \Iterator {
      *  object that can be used to contruct records
      * @param String $data Data returned in response body
      * @param String $format Default 'json'.  Others may be added in future.
-     * @return Array|Object
+     * @return Object
      */
     protected static function _parseResponseBody ($data, $format = 'json') {
 
@@ -235,16 +233,16 @@ class RecordSet implements \Iterator {
      * Sets error state
      * @param Boolean
      */
-    public function setErrors ($error) {
-        $this->_errors = $error;
+    public function setErrors (bool $error) {
+        $this->errors = $error;
     }
 
     /**
      * Were there any errors with the request?
      * @return Boolean   True is there were errors
      */
-    public function getErrors () {
-        return $this->_errors;
+    public function getErrors () : bool {
+        return $this->errors;
     }
 
 
@@ -254,8 +252,8 @@ class RecordSet implements \Iterator {
      * @param Int
      * @return RecordSet      Fluent interface
      */
-    public function setErrorCode ($c) {
-        $this->_errorCode = $c;
+    public function setErrorCode (int $c) : RecordSet {
+        $this->error_code = $c;
         return $this;
     }
 
@@ -265,8 +263,8 @@ class RecordSet implements \Iterator {
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
      * @return Int
      */
-    public function getErrorCode () {
-        return $this->_errorCode;
+    public function getErrorCode () : int {
+        return $this->error_code;
     }
 
 
@@ -276,8 +274,8 @@ class RecordSet implements \Iterator {
      * @param String
      * @return RecordSet      Fluent interface
      */
-    public function setErrorMessage ($msg) {
-        $this->_errorMessage = $msg;
+    public function setErrorMessage (string $msg) : RecordSet {
+        $this->error_message = $msg;
         return $this;
     }
 
@@ -287,8 +285,8 @@ class RecordSet implements \Iterator {
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
      * @return String
      */
-    public function getErrorMessage () {
-        return $this->_errorMessage;
+    public function getErrorMessage () : string {
+        return $this->error_message;
     }
 
 
@@ -298,8 +296,8 @@ class RecordSet implements \Iterator {
      * @param Int
      * @return RecordSet      Fluent interface
      */
-    public function setResponseStatus ($status) {
-        $this->_responseStatus = $status;
+    public function setResponseStatus (int $status) : RecordSet {
+        $this->response_status = $status;
         return $this;
     }
 
@@ -307,10 +305,10 @@ class RecordSet implements \Iterator {
     /**
      * Get the http response status returned by the server
      * @link http://www.lamplight-publishing.co.uk/api/core.php#errors
-     * @return Int
+     * @return int
      */
-    public function getResponseStatus () {
-        return $this->_responseStatus;
+    public function getResponseStatus () : int {
+        return $this->response_status;
     }
 
 
@@ -319,11 +317,11 @@ class RecordSet implements \Iterator {
      * The record will scan through the string lookoing for expressions
      * enclosed in {} braces, using the expression found as the field
      * identifier e.g. <div>Name: {name}</div><div>ID: {id}</div>
-     * @param String $template Template to use for records
+     * @param string $template Template to use for records
      * @return RecordSet      Fluent interface
      */
-    public function setRecordTemplate ($template) {
-        $this->_recordTemplate = $template;
+    public function setRecordTemplate (string $template) : RecordSet {
+        $this->record_template = $template;
         return $this;
     }
 
@@ -332,8 +330,8 @@ class RecordSet implements \Iterator {
      * Getter for the record template
      * @return String
      */
-    public function getRecordTemplate () {
-        return $this->_recordTemplate;
+    public function getRecordTemplate () : string {
+        return $this->record_template;
     }
 
 
@@ -345,7 +343,7 @@ class RecordSet implements \Iterator {
      * @return String
      * @see setRecordTemplate
      */
-    public function render ($template = '') {
+    public function render ($template = '') : string {
 
         if ($template !== '') {
             $this->setRecordTemplate($template);
@@ -367,7 +365,7 @@ class RecordSet implements \Iterator {
      * @return Int
      */
     public function count () {
-        return count($this->_records);
+        return count($this->records);
     }
 
     /**
@@ -375,23 +373,22 @@ class RecordSet implements \Iterator {
      * ('s' if there's not 1 record (i.e. zero or more than one)
      * @return String     's' or ''
      */
-    public function plural () {
+    public function plural () : string {
         return ($this->count() != 1 ? "s" : "");
     }
 
 
     /////// Iterator methods
     public function rewind () {
-
-        $this->_index = 0;
+        $this->index = 0;
     }
 
     /**
      * @return Mixed
      */
     public function current () {
-        $k = array_keys($this->_records);
-        $var = $this->_records[$k[$this->_index]];
+        $k = array_keys($this->records);
+        $var = $this->records[$k[$this->index]];
         return $var;
     }
 
@@ -399,8 +396,8 @@ class RecordSet implements \Iterator {
      * @return Mixed
      */
     public function key () {
-        $k = array_keys($this->_records);
-        $var = $k[$this->_index];
+        $k = array_keys($this->records);
+        $var = $k[$this->index];
         return $var;
     }
 
@@ -408,9 +405,9 @@ class RecordSet implements \Iterator {
      * @return Mixed | false
      */
     public function next () {
-        $k = array_keys($this->_records);
-        if (isset($k[++$this->_index])) {
-            $var = $this->_records[$k[$this->_index]];
+        $k = array_keys($this->records);
+        if (isset($k[++$this->index])) {
+            $var = $this->records[$k[$this->index]];
             return $var;
         } else {
             return false;
@@ -421,8 +418,8 @@ class RecordSet implements \Iterator {
      * @return Boolean
      */
     public function valid () {
-        $k = array_keys($this->_records);
-        $var = isset($k[$this->_index]);
+        $k = array_keys($this->records);
+        $var = isset($k[$this->index]);
         return $var;
     }
 
