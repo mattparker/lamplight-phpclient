@@ -1,5 +1,7 @@
 <?php
 namespace Lamplight;
+use Lamplight\Record\BaseRecord;
+
 /**
  *
  * Lamplight php API client
@@ -87,7 +89,7 @@ class RecordSet implements \Iterator {
      * Base record class, used when constructing Records from the data
      * @var String
      */
-    protected static string $baseRecordClassName = 'Lamplight_Record';
+    protected static string $baseRecordClassName = '\Lamplight\Record';
 
 
     /**
@@ -128,18 +130,21 @@ class RecordSet implements \Iterator {
             if ($recordClass == '') {
                 $recordClass = self::_buildRecordClassName($action, $method);
             }
-            $data = self::_parseResponseBody($resp->getBody(), $format);
-
-            if ($data === false) {
+            try {
+                $data = self::_parseResponseBody($resp->getBody()->getContents(), $format);
+            } catch (\Error $parse_data_error) {
                 $errors = true;
-            } elseif (is_object($data) && property_exists($data, 'data')) {
+            }
 
-                if (is_object($data->data)) {
+            if (is_array($data) && array_key_exists('data', $data)) {
+
+                if (is_object($data['data'])) {
                     $data->data = array($data->data);
                 }
 
-                if (is_array($data->data)) {
-                    foreach ($data->data as $rec) {
+                if (is_array($data['data'])) {
+                    foreach ($data['data'] as $rec) {
+                        /** @var BaseRecord $newRec */
                         $newRec = new $recordClass($rec);
                         $newRec->init($client);
                         $records[$newRec->get('id')] = $newRec;
@@ -196,7 +201,7 @@ class RecordSet implements \Iterator {
      */
     protected static function _buildRecordClassName ($action, $method) {
 
-        $class = self::$baseRecordClassName . '_' . ucfirst($method);
+        $class = self::$baseRecordClassName . '\\' . ucfirst($method);
         if ($action != 'one') {
             $class .= 'Summary';
         }
@@ -218,13 +223,9 @@ class RecordSet implements \Iterator {
             case 'json':
             default:
 
-                try {
-                    return json_decode($data);
-                } catch (\Exception $e) {
-                    return false;
+
+                    return json_decode($data, true);
                 }
-                break;
-        }
 
     }
 

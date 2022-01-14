@@ -421,7 +421,7 @@ class Client {
      * Retrieves the method used in the last request (one|some|all)
      * @return String   Last method used (one|some|all)
      */
-    public function getLastLamplightMethod () {
+    public function getLastLamplightMethod () : string {
         return $this->last_lamplight_method_sent;
     }
 
@@ -429,7 +429,7 @@ class Client {
      * Retrieves the action used in the last request (work|people|orgs|workarea)
      * @return String  Last action used
      */
-    public function getLastLamplightAction () {
+    public function getLastLamplightAction () : string {
         return $this->last_lamplight_action;
     }
 

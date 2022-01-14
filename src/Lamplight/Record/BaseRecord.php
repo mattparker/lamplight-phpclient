@@ -1,6 +1,8 @@
 <?php
 namespace Lamplight\Record;
 
+use Lamplight\Client;
+
 /**
  *
  * Lamplight php API client
@@ -72,9 +74,9 @@ abstract class BaseRecord implements \Iterator {
      * immediately after construction, for additional
      * work by implementing classes
      *
-     * @param Lamplight_Client
+     * @param Client
      */
-    public function init (Lamplight_Client $client) {
+    public function init (Client $client) {
     }
 
 
@@ -87,8 +89,8 @@ abstract class BaseRecord implements \Iterator {
      */
     public function get ($field) {
 
-        if (is_object($this->_data) && property_exists($this->_data, $field)) {
-            return trim($this->_data->{$field});
+        if (is_array($this->_data) && array_key_exists($field, $this->_data)) {
+            return trim($this->_data[$field]);
         }
 
         return '';
@@ -107,7 +109,7 @@ abstract class BaseRecord implements \Iterator {
 
         // If no template, just return comma-separated string:
         if ($template == '') {
-            return Lamplight_Record_Abstract::implodeRecursive(", ", $this->_data);
+            return self::implodeRecursive(", ", $this->_data);
         }
 
         preg_match_all("/\{([a-zA-Z0-9_]+)\}/", $template, $matches, PREG_PATTERN_ORDER);
@@ -154,7 +156,7 @@ abstract class BaseRecord implements \Iterator {
      *
      * @return string
      */
-    public static function implodeRecursive ($glue, array $pieces) {
+    public static function implodeRecursive ($glue, iterable $pieces) {
 
         $r = '';
         foreach ($pieces as $v) {
