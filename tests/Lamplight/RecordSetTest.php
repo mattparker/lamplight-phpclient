@@ -86,23 +86,18 @@ class RecordSetTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     public function test_successful_response_with_two_records_no_template () {
 
-        $data = [
-            'data' => [
-                ["id" =>"1", "text" => "Sports and games"],
-                ['id' => 2, 'text' => 'Arts']
-            ]
-        ];
-        $response = $this->prepareResponse(200, false, json_encode($data));
+        $data = '{"data":[{"id":"1","text":"Sports and games","children":[{"id":"2","text":"Table tennis"},{"id":"3","text":"sunbathing"}]},{"id":"4","text":"Learning and Education","children":[]}],"meta":{"numResults":2,"totalRecords":2}}';
+        $response = $this->prepareResponse(200, false, $data);
         $this->prepareClient('all', 'workarea', $response);
 
         $record_set = RecordSet::factory($this->mock_client);
 
-        //$this->assertEquals(2, $record_set->count());
+        $this->assertEquals(2, $record_set->count());
         $this->assertFalse($record_set->getErrors());
         $this->assertEquals(0, $record_set->getErrorCode());
         $this->assertEquals('', $record_set->getErrorMessage());
         $this->assertEquals(200, $record_set->getResponseStatus());
-        $this->assertEquals('1, Sports and games2, Arts', $record_set->render());
+        $this->assertEquals('1, Sports and games Table tennis3, sunbathing4, Learning and Education', $record_set->render());
 
         $record_set->rewind();
         $record = $record_set->current();

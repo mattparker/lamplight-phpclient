@@ -161,7 +161,7 @@ abstract class BaseRecord implements \Iterator {
         $r = '';
         foreach ($pieces as $v) {
             if (is_array($v)) {
-                $r .= self::implodeRecursive($glue, $pieces);
+                $r .= self::implodeRecursive($glue, $v);
             } else {
                 $r .= $glue . $v;
             }
