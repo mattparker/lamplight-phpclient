@@ -29,7 +29,7 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
     }
 
 
-    protected function prepareResponse (int $status, bool $is_error, string $body_content) {
+    protected function prepareResponse (int $status, bool $is_error, ?string $body_content) {
 
         $response = m::mock(Response::class);
         $response->shouldReceive('getStatus')->andReturn($status);
@@ -108,6 +108,71 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
 
         $record_set->next();
         $this->assertTrue($record_set->valid());
+
+    }
+
+    public function test_error_with_response_and_bad_response () {
+
+        $data = ' not json';
+        $response = $this->prepareResponse(400, true, $data);
+        $this->prepareClient('all', 'workarea', $response);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertTrue($record_set->getErrors());
+        $this->assertEquals(1100, $record_set->getErrorCode());
+
+    }
+
+
+    public function test_error_with_response_and_error_message () {
+
+        $data = json_encode(['error' => 1234, 'msg' => $error_message = 'bad luck']);
+        $response = $this->prepareResponse(400, true, $data);
+        $this->prepareClient('all', 'workarea', $response);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertTrue($record_set->getErrors());
+        $this->assertEquals(1234, $record_set->getErrorCode());
+        $this->assertEquals($error_message, $record_set->getErrorMessage());
+
+    }
+
+    public function test_error_with_response_and_empty_response () {
+
+        $data = null;
+        $response = $this->prepareResponse(400, true, $data);
+        $this->prepareClient('all', 'workarea', $response);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertTrue($record_set->getErrors());
+        $this->assertEquals(1100, $record_set->getErrorCode());
+
+    }
+
+
+    public function test_error_when_server_says_ok_but_content_bad () {
+
+        $data = ' not json';
+        $response = $this->prepareResponse(200, false, $data);
+        $this->prepareClient('all', 'workarea', $response);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertTrue($record_set->getErrors());
+        $this->assertEquals(1100, $record_set->getErrorCode());
+
+    }
+
+
+    public function test_error_when_no_request_made () {
+
+        $this->prepareClient('all', 'workarea', null);
+
+        $this->expectException(\Exception::class);
+        $this->sut->makeRecordSetFromData($this->mock_client);
 
     }
 
