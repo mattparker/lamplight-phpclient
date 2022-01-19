@@ -5,6 +5,7 @@ namespace SandboxTests;
 use Lamplight\Record\People;
 use Lamplight\Record\Referral;
 use Lamplight\Record\Work;
+use Lamplight\Record\WorkSummary;
 use PHPUnit\Framework\TestCase;
 use Lamplight\Client;
 
@@ -70,8 +71,31 @@ class GetLiveDataFromSandboxTest extends TestCase {
 
     public function test_get_work () {
         $work = $this->sut->fetchWork()->fetchOne(30936)->request();
-        $expected = '{"data":{"id":"30936","title":"My published record","workarea":"1","workareaText":"Sports and games","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"date_updated":"2022-01-14 16:06:32","subWorkareas":[],"location":[],"location_full_details":[],"summary":"","description":"","followup":"","num_users_attending":"0","maximum_num_users_allowed":"15"},"meta":{"numRecords":1,"totalRecords":1}}';
+        $expected = '{"data":{"id":"30936","title":"My published record","workarea":"1","workareaText":"Sports and games","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"date_updated":"2022-01-14 17:06:25","subWorkareas":[],"location":[],"location_full_details":[],"summary":"","description":"","followup":"","num_users_attending":"1","maximum_num_users_allowed":"15"},"meta":{"numRecords":1,"totalRecords":1}}';
         $this->assertEquals($expected, $work->getBody()->getContents());
+
+        $this->assertTrue($work->isSuccessful());
+        $records = $this->sut->getRecordSet();
+        $records->rewind();
+        $this->assertEquals(1, $records->count());
+        $this->assertEquals(30936, $records->current()->get('id'));
+    }
+
+    public function test_get_some_work () {
+
+        $work = $this->sut->fetchWork()->fetchSome()->request();
+        $expected = '{"data":[{"id":30936,"title":"My published record","workarea":1,"workareaText":"Sports and games","subWorkareas":"","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"num_users_attending":"1","maximum_num_users_allowed":"15"},{"id":30937,"title":"My published record","workarea":1,"workareaText":"Sports and games","subWorkareas":"","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"num_users_attending":"1","maximum_num_users_allowed":"15"},{"id":30938,"title":"My published record","workarea":1,"workareaText":"Sports and games","subWorkareas":"","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"num_users_attending":"0","maximum_num_users_allowed":"15"}],"meta":{"numRecords":3,"totalRecords":3}}';
+
+        $this->assertEquals($expected, $work->getBody()->getContents());
+
+        $this->assertTrue($work->isSuccessful());
+        $records = $this->sut->getRecordSet();
+
+        $records->rewind();
+        $record_1 = $records->current();
+        $this->assertInstanceOf(WorkSummary::class, $record_1);
+        $this->assertEquals(30936, $record_1->get('id'));
+        $this->assertEquals("My published record", $record_1->get('title'));
     }
 
     public function test_add_attendee_to_work () {

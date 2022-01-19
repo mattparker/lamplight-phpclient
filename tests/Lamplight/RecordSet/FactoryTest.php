@@ -125,8 +125,28 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
         $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
 
         $this->assertEquals(1, $record_set->count());
+        $record = $record_set->current();
+
+        $this->assertEquals(653, $record->get('id'));
+        $this->assertEquals("Example Staff-Member", $record->get('name'));
     }
 
+
+    public function test_success_response_single_work () {
+
+        $data = '{"data":{"id":"30936","title":"My published record","workarea":"1","workareaText":"Sports and games","start_date":"2022-01-14 16:15:00","end_date":"2022-01-14 16:15:00","may_add_attend":true,"date_updated":"2022-01-14 17:06:25","subWorkareas":[],"location":[],"location_full_details":[],"summary":"","description":"","followup":"","num_users_attending":"1","maximum_num_users_allowed":"15"},"meta":{"numRecords":1,"totalRecords":1}}';
+        $response = $this->prepareResponse(200, false, $data);
+        $this->prepareClient('one', 'people', $response);
+        $this->mock_client->shouldReceive('getParameter')->once()->with('role')->andReturn(Client::FUNDER_ROLE);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertEquals(1, $record_set->count());
+        $record = $record_set->current();
+        $this->assertEquals(30936, $record->get('id'));
+        $this->assertEquals("My published record", $record->get('title'));
+
+    }
 
 
     public function test_error_with_response_and_bad_response () {

@@ -345,11 +345,11 @@ class Client {
     // Datain methods
 
     /**
-     * @param int $recordid
+     * @param int|string $recordid ID or comma separated list of IDs
      * @param int|string $identifier_of_attendee ID or email address of attendee
      * @return $this
      */
-    public function attendWork (int $recordid, $identifier_of_attendee) : Client {
+    public function attendWork ($recordid, $identifier_of_attendee) : Client {
         // this is work
         $this->fetchWork();
         $this->setParameterPost('id', $recordid);
