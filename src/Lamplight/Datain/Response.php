@@ -195,6 +195,19 @@ class Response implements \Lamplight\Response, \Iterator {
     }
 
 
+    public function addChildResponse (Response $response) {
+        $this->child_responses[] = $response;
+    }
+
+    /**
+     * @param int $record_id
+     */
+    public function setRecordId (int $record_id): void {
+        $this->record_id = $record_id;
+    }
+
+
+
     /**
      * Gets the ID of the record we've added to
      * @return Int
@@ -238,12 +251,12 @@ class Response implements \Lamplight\Response, \Iterator {
         }
 
         $json = $this->getJsonResponse();
-        $id = (int)$this->lamplight_client->getParameter('id');
+        $id_sent_by_client_for_record = (int)$this->lamplight_client->getParameter('id');
 
         // check property exists and id matches originally passed id
         if ($json && property_exists($json, 'data')) {
 
-            $this->parseSingleResponseData($json, $id);
+            $this->parseSingleResponseData($json, $id_sent_by_client_for_record);
             return;
 
         }
@@ -266,27 +279,27 @@ class Response implements \Lamplight\Response, \Iterator {
     }
 
     /**
-     * @param array|\stdClass $json
-     * @param mixed $id
+     * @param \stdClass $response_data
+     * @param ?int $id_sent_by_client_for_record
      * @return void
      */
-    protected function parseSingleResponseData ($json, ?int $id): void {
+    protected function parseSingleResponseData (\stdClass $response_data, ?int $id_sent_by_client_for_record): void {
 
         $response_id = false;
 
-        if (is_object($json->data) && property_exists($json->data, 'id')) {
-            $response_id = $json->data->id;
+        if (is_object($response_data->data) && property_exists($response_data->data, 'id')) {
+            $response_id = $response_data->data->id;
         }
-        if (is_numeric($json->data) && $json->data > 0) {
-            $response_id = $json->data;
+        if (is_numeric($response_data->data) && $response_data->data > 0) {
+            $response_id = $response_data->data;
         }
         if (!$response_id) {
             return;
         }
 
         // single record: if it has an id, does it match?
-        if ($id > 0) {
-            $this->was_request_success = ($response_id == $id);
+        if ($id_sent_by_client_for_record > 0) {
+            $this->was_request_success = ($response_id == $id_sent_by_client_for_record);
             return;
         }
         $this->was_request_success = true;
