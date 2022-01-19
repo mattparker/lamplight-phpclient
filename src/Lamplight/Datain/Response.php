@@ -51,18 +51,18 @@ class Response implements \Lamplight\Response, \Iterator {
     /**
      * @var SuccessResponse          The response created
      */
-    protected $_response;
+    protected $response;
 
     /**
      * @var Object                      stdClass json decoded Lamplight response
      */
-    protected $_responseJson;
+    protected $response_json;
 
 
     /**
      * @var String                      http response code
      */
-    protected $_responseHttpStatus = null;
+    protected $response_http_status = null;
 
     /**
      * @var array                       If we add to multiple records at once,
@@ -70,44 +70,47 @@ class Response implements \Lamplight\Response, \Iterator {
      *                                  for each record, and use the parent
      *                                  to hold and iterate through the children
      */
-    protected array $_responseChildren = array();
+    protected array $child_responses = array();
 
     /**
      * @var Int                         Internal array pointer for multiple ones
      */
-    protected int $_responseChildrenPointer = 0;
+    protected int $child_response_pointer = 0;
 
     /**
      * @var Boolean                     Whether this is an add multi
      */
-    protected $_isMultiple = null;
+    protected $is_multiple = null;
 
     /**
      * @var Response
      */
-    protected $_parentResponse = null;
+    protected $parent_response = null;
 
     /**
      * @var Client            The Lamplight client used for the request
      */
-    protected $_client;
+    protected $lamplight_client;
 
     /**
      * @var Boolean                     Whether the request was successful
      */
-    protected $_success = null;
+    protected $was_request_success = null;
 
     /**
      * @var Int                         Error code returned by Lamplight (not HTTP)
      */
-    protected $_error = null;
+    protected $lamplight_error_code = null;
 
     /**
      * @var String                      Error message returned by Lamplight
      */
-    protected $_errorMessage = null;
+    protected $lamplight_error_message = null;
 
-    protected int $_id = 0;
+    /**
+     * @var int
+     */
+    protected int $record_id = 0;
 
 
     /**
@@ -126,7 +129,7 @@ class Response implements \Lamplight\Response, \Iterator {
         }
 
         if ($parent) {
-            $this->_parentResponse = $parent;
+            $this->parent_response = $parent;
         }
 
     }
@@ -159,8 +162,8 @@ class Response implements \Lamplight\Response, \Iterator {
 
         }
 
-        $this->_response = $client->getLastResponse();
-        $this->_client = $client;
+        $this->response = $client->getLastResponse();
+        $this->lamplight_client = $client;
 
         // Work out if we did lots of datain's, and if so set up
         // a child response for each
@@ -177,7 +180,7 @@ class Response implements \Lamplight\Response, \Iterator {
      * @var Boolean
      */
     public function isMultiple () {
-        return $this->_isMultiple;
+        return $this->is_multiple;
     }
 
 
@@ -187,11 +190,11 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function getJsonResponse () : ?\stdClass {
 
-        if ($this->_responseJson === null) {
+        if ($this->response_json === null) {
 
-            $this->_responseJson = json_decode($this->_response->getBody()->getContents());//, Zend_Json::TYPE_OBJECT);
+            $this->response_json = json_decode($this->response->getBody()->getContents());//, Zend_Json::TYPE_OBJECT);
         }
-        return $this->_responseJson;
+        return $this->response_json;
     }
 
 
@@ -201,7 +204,7 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function getId () {
 
-        return (int)$this->_id;
+        return (int)$this->record_id;
 
     }
 
@@ -212,22 +215,22 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function success () {
 
-        if ($this->_success === null) {
+        if ($this->was_request_success === null) {
 
             // If multiple, return a number from the children:
-            if ($this->_isMultiple) {
+            if ($this->is_multiple) {
 
-                foreach ($this->_responseChildren as $child) {
+                foreach ($this->child_responses as $child) {
 
                     if ($child->success()) {
-                        $this->_success++;
+                        $this->was_request_success++;
                     }
                 }
 
             } else {
 
                 $json = $this->getJsonResponse();
-                $client = $this->_client;
+                $client = $this->lamplight_client;
                 $id = $client->getParameter('id');
                 $type = $client->getLastLamplightAction();
 
@@ -244,35 +247,35 @@ class Response implements \Lamplight\Response, \Iterator {
 
                         // single record: if it has an id, does it match?
                         if ($id > 0) {
-                            $this->_success = ($json->data->id == $id);
+                            $this->was_request_success = ($json->data->id == $id);
                         } else {
-                            $this->_success = true;
+                            $this->was_request_success = true;
                         }
 
                     } else if (is_numeric($json->data) && $json->data > 0) {
 
                         // single record: if it has an id, does it match?
                         if ($id > 0) {
-                            $this->_success = ($json->data == $id);
+                            $this->was_request_success = ($json->data == $id);
                         } else {
-                            $this->_success = true;
+                            $this->was_request_success = true;
                         }
 
                     }
 
                 } else {
 
-                    $this->_success = false;
+                    $this->was_request_success = false;
                 }
 
             }
 
         }
 
-        if ($this->_isMultiple) {
-            return $this->_success == count($this->_responseChildren);
+        if ($this->is_multiple) {
+            return $this->was_request_success == count($this->child_responses);
         }
-        return $this->_success;
+        return $this->was_request_success;
 
     }
 
@@ -293,10 +296,10 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function getResponseStatus () {
 
-        if ($this->_responseHttpStatus === null) {
-            $this->_responseHttpStatus = $this->_response->getStatus();
+        if ($this->response_http_status === null) {
+            $this->response_http_status = $this->response->getStatus();
         }
-        return $this->_responseHttpStatus;
+        return $this->response_http_status;
     }
 
 
@@ -306,17 +309,17 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function getErrorCode () {
 
-        if ($this->_error === null) {
+        if ($this->lamplight_error_code === null) {
 
             $json = $this->getJsonResponse();
             if ($json && property_exists($json, 'error')) {
-                $this->_error = $json->error;
+                $this->lamplight_error_code = $json->error;
             }
         } else {
-            $this->_error = false;
+            $this->lamplight_error_code = false;
         }
 
-        return $this->_error;
+        return $this->lamplight_error_code;
     }
 
 
@@ -326,17 +329,17 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function getErrorMessage () : string {
 
-        if ($this->_errorMessage === null) {
+        if ($this->lamplight_error_message === null) {
 
             if ($this->getErrorCode()) {
 
                 $json = $this->getJsonResponse();
                 if ($json && property_exists($json, 'msg')) {
 
-                    $this->_errorMessage = $json->msg;
+                    $this->lamplight_error_message = $json->msg;
 
                 } else {
-                    $this->_errorMessage = 'There was an error but no message returned with it';
+                    $this->lamplight_error_message = 'There was an error but no message returned with it';
                 }
             } else {
                 $this->_errorMesage = '';
@@ -344,7 +347,7 @@ class Response implements \Lamplight\Response, \Iterator {
 
         }
 
-        return $this->_errorMessage;
+        return $this->lamplight_error_message;
     }
 
 
@@ -353,10 +356,10 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     protected function _handleMultiples () {
 
-        if ($this->_isMultiple === null) {
+        if ($this->is_multiple === null) {
 
             $json = $this->getJsonResponse();
-            $client = $this->_client;
+            $client = $this->lamplight_client;
             $id = $client->getParameter('id');
             $type = $client->getLastLamplightAction();
 
@@ -380,15 +383,15 @@ class Response implements \Lamplight\Response, \Iterator {
                             $this
                         );
 
-                        $this->_responseChildren[] = $child;
+                        $this->child_responses[] = $child;
 
                     }
 
-                    $this->_isMultiple = true;
+                    $this->is_multiple = true;
 
                 } else {
-                    $this->_isMultiple = false;
-                    $this->_id = $id;
+                    $this->is_multiple = false;
+                    $this->record_id = $id;
                 }
             }
         }
@@ -400,15 +403,15 @@ class Response implements \Lamplight\Response, \Iterator {
     public function _overRide (array $data = [], Response $resp) {
 
         // Only the parent can override
-        if ($resp !== $this->_parentResponse) {
+        if ($resp !== $this->parent_response) {
             return;
         }
 
-        $this->_id = $data['id'];
-        $this->_success = $data['success'];
-        $this->_error = $data['error'];
-        $this->_errorMessage = $data['errorMessage'];
-        $this->_responseJson = $data['responseJson'];
+        $this->record_id = $data['id'];
+        $this->was_request_success = $data['success'];
+        $this->lamplight_error_code = $data['error'];
+        $this->lamplight_error_message = $data['errorMessage'];
+        $this->response_json = $data['responseJson'];
 
     }
 
@@ -418,21 +421,21 @@ class Response implements \Lamplight\Response, \Iterator {
      * @return Int
      */
     public function count () {
-        return count($this->_responseChildren);
+        return count($this->child_responses);
     }
 
     /////// Iterator methods
     public function rewind () {
 
-        $this->_responseChildrenPointer = 0;
+        $this->child_response_pointer = 0;
     }
 
     /**
      * @return Response
      */
     public function current () {
-        $k = array_keys($this->_responseChildren);
-        $var = $this->_responseChildren[$k[$this->_responseChildrenPointer]];
+        $k = array_keys($this->child_responses);
+        $var = $this->child_responses[$k[$this->child_response_pointer]];
         return $var;
     }
 
@@ -440,8 +443,8 @@ class Response implements \Lamplight\Response, \Iterator {
      * @return Mixed
      */
     public function key () {
-        $k = array_keys($this->_responseChildren);
-        $var = $k[$this->_responseChildrenPointer];
+        $k = array_keys($this->child_responses);
+        $var = $k[$this->child_response_pointer];
         return $var;
     }
 
@@ -449,9 +452,9 @@ class Response implements \Lamplight\Response, \Iterator {
      * @return Mixed | false
      */
     public function next () {
-        $k = array_keys($this->_responseChildren);
-        if (isset($k[++$this->_responseChildrenPointer])) {
-            $var = $this->_responseChildren[$k[$this->_responseChildrenPointer]];
+        $k = array_keys($this->child_responses);
+        if (isset($k[++$this->child_response_pointer])) {
+            $var = $this->child_responses[$k[$this->child_response_pointer]];
             return $var;
         } else {
             return false;
@@ -462,16 +465,16 @@ class Response implements \Lamplight\Response, \Iterator {
      * @return Boolean
      */
     public function valid () {
-        $k = array_keys($this->_responseChildren);
-        $var = isset($k[$this->_responseChildrenPointer]);
+        $k = array_keys($this->child_responses);
+        $var = isset($k[$this->child_response_pointer]);
         return $var;
     }
 
     protected function getRelevantResponse () : \Lamplight\Response {
-        if ($this->_response) {
-            return $this->_response;
+        if ($this->response) {
+            return $this->response;
         }
-        return $this->_parentResponse;
+        return $this->parent_response;
     }
 
     public function getProtocolVersion () {
