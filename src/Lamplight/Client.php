@@ -483,7 +483,7 @@ class Client {
             $response = $this->client->request($this->http_method, $uri, $params);
             $lamplight_response = new Response\SuccessResponse($response);
 
-        } catch (ClientException|GuzzleException $client_exception) {
+        } catch (\Throwable $client_exception) {
 
             $lamplight_response = new ErrorResponse($client_exception->getCode(), $client_exception->getMessage());
 

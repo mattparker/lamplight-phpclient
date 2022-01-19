@@ -2,8 +2,12 @@
 
 namespace Lamplight;
 
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Lamplight\Client\Exception\MayNotRequestAllWorkException;
 use Lamplight\Record\Mutable;
+use Lamplight\Response\ErrorResponse;
+use Lamplight\Response\SuccessResponse;
 use Mockery as m;
 use Psr\Http\Message\ResponseInterface;
 
@@ -389,5 +393,34 @@ class ClientTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertEquals('referral', $this->sut->getLastLamplightAction());
     }
 
+    public function test_the_response_when_ok () {
+
+        $this->expectGuzzleRequest(m::any(), m::any(), m::any());
+
+        $response = $this->sut->fetchOne(123)->fetchPeople(Client::FUNDER_ROLE)->request();
+
+
+        $this->assertInstanceOf(SuccessResponse::class, $response);
+        $this->assertSame($response, $this->sut->getLastResponse());
+
+    }
+
+
+    public function test_the_response_with_error () {
+
+        $this->mock_guzzle_client->shouldReceive('request')
+            ->andThrow(new \Exception($error_message = 'Not allowed', $error_code = 403));
+
+
+        $response = $this->sut->fetchOne(123)->fetchPeople(Client::FUNDER_ROLE)->request();
+
+
+        $this->assertInstanceOf(ErrorResponse::class, $response);
+
+        $this->assertSame($response, $this->sut->getLastResponse());
+        $this->assertEquals($error_code, $response->getStatus());
+        $this->assertEquals($error_message, $response->getReasonPhrase());
+
+    }
 
 }
