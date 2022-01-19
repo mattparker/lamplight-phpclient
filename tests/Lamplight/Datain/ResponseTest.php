@@ -66,6 +66,28 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertFalse($sut->isMultiple());
         $this->assertTrue($sut->success());
         $this->assertEquals(0, $sut->count(), 'No "child" responses');
+        $this->assertEquals(200, $sut->getResponseStatus());
+        $this->assertFalse($sut->getErrorCode());
+        $this->assertEquals('', $sut->getErrorMessage());
+
+
+    }
+
+
+    public function test_create_new_record () {
+
+        $content = json_encode(['data' => $id = 123]);
+        $this->prepareLastActionMethod('referral', 'add');
+        $this->prepareLastResponse($content, 200);
+
+        $this->client->shouldReceive('getParameter')->with('id')->andReturn('');
+
+        $sut = new Response($this->client);
+
+        $this->assertEquals($id, $sut->getId());
+        $this->assertFalse($sut->isMultiple());
+        $this->assertTrue($sut->success());
+        $this->assertEquals(0, $sut->count(), 'No "child" responses');
 
 
     }
@@ -138,11 +160,15 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
         $first = $sut->current();
         $this->assertEquals($id, $first->getId());
         $this->assertTrue($first->success());
+        $this->assertEquals(false, $first->getErrorCode());
+        $this->assertEquals('', $first->getErrorMessage());
 
         $sut->next();
         $second = $sut->current();
         $this->assertEquals(30937, $second->getId());
         $this->assertFalse($second->success());
+        $this->assertEquals(1026, $second->getErrorCode());
+        $this->assertEquals('This attendee is already attending the record requested', $second->getErrorMessage());
     }
 
 

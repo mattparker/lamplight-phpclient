@@ -93,7 +93,9 @@ class Response implements \Lamplight\Response, \Iterator {
     protected $lamplight_client;
 
     /**
-     * @var Boolean                     Whether the request was successful
+     * @var int
+     * Number of successful datain responses. If you add to multiple records in one request,
+     * some may succeed and some may not; this is the number that succeeded.
      */
     protected $was_request_success = null;
 
@@ -121,11 +123,8 @@ class Response implements \Lamplight\Response, \Iterator {
      */
     public function __construct (Client $client = null, Response $parent = null) {
 
-
         if ($client) {
-
             $this->setClient($client);
-
         }
 
         if ($parent) {
@@ -139,13 +138,12 @@ class Response implements \Lamplight\Response, \Iterator {
      * Sets the client
      * @param Client $client
      * @return Response
+     * @throws LastRequestWasNotDataInException
      */
     public function setClient (Client $client) {
 
         // check last request was a datain one:
-        $validDataMethod = array("attend");
-        $validDataAction = array("work");
-        $validMA = array(
+        $valid_datain_method_action_pairs = array(
             "work/attend",
             "referral/add",
             "people/add",
@@ -153,10 +151,10 @@ class Response implements \Lamplight\Response, \Iterator {
             "orgs/add",
             "orgs/update"
         );
-        $ma = $client->getLastLamplightAction() . "/" . $client->getLastLamplightMethod();
+        $last_method_action = $client->getLastLamplightAction() . "/" . $client->getLastLamplightMethod();
 
 
-        if (!in_array($ma, $validMA)) {
+        if (!in_array($last_method_action, $valid_datain_method_action_pairs)) {
 
             throw new LastRequestWasNotDataInException("The last request was not a datain one.");
 
@@ -167,7 +165,7 @@ class Response implements \Lamplight\Response, \Iterator {
 
         // Work out if we did lots of datain's, and if so set up
         // a child response for each
-        $this->_handleMultiples();
+        $this->createResponsesFromResponse();
 
         return $this;
 
@@ -177,7 +175,7 @@ class Response implements \Lamplight\Response, \Iterator {
     /**
      * Whether this was a multi-submission and therefore
      * multiple response
-     * @var Boolean
+     * @var bool
      */
     public function isMultiple () {
         return $this->is_multiple;
@@ -191,8 +189,7 @@ class Response implements \Lamplight\Response, \Iterator {
     public function getJsonResponse () : ?\stdClass {
 
         if ($this->response_json === null) {
-
-            $this->response_json = json_decode($this->response->getBody()->getContents());//, Zend_Json::TYPE_OBJECT);
+            $this->response_json = json_decode($this->response->getBody()->getContents());
         }
         return $this->response_json;
     }
@@ -202,9 +199,9 @@ class Response implements \Lamplight\Response, \Iterator {
      * Gets the ID of the record we've added to
      * @return Int
      */
-    public function getId () {
+    public function getId () : int {
 
-        return (int)$this->record_id;
+        return $this->record_id;
 
     }
 
@@ -216,60 +213,7 @@ class Response implements \Lamplight\Response, \Iterator {
     public function success () {
 
         if ($this->was_request_success === null) {
-
-            // If multiple, return a number from the children:
-            if ($this->is_multiple) {
-
-                foreach ($this->child_responses as $child) {
-
-                    if ($child->success()) {
-                        $this->was_request_success++;
-                    }
-                }
-
-            } else {
-
-                $json = $this->getJsonResponse();
-                $client = $this->lamplight_client;
-                $id = $client->getParameter('id');
-                $type = $client->getLastLamplightAction();
-
-
-                // check property exists and id matches originally passed id
-                if ($json && property_exists($json, 'data')) {
-
-                    if (is_array($json->data)) {
-
-                        // multiples: check each
-
-                    } else if (is_object($json->data) && property_exists($json->data, 'id')) {
-
-
-                        // single record: if it has an id, does it match?
-                        if ($id > 0) {
-                            $this->was_request_success = ($json->data->id == $id);
-                        } else {
-                            $this->was_request_success = true;
-                        }
-
-                    } else if (is_numeric($json->data) && $json->data > 0) {
-
-                        // single record: if it has an id, does it match?
-                        if ($id > 0) {
-                            $this->was_request_success = ($json->data == $id);
-                        } else {
-                            $this->was_request_success = true;
-                        }
-
-                    }
-
-                } else {
-
-                    $this->was_request_success = false;
-                }
-
-            }
-
+            $this->parseResponses();
         }
 
         if ($this->is_multiple) {
@@ -279,6 +223,75 @@ class Response implements \Lamplight\Response, \Iterator {
 
     }
 
+
+    /**
+     * @return void
+     */
+    protected function parseResponses (): void {
+
+        // If multiple, return a number from the children:
+        if ($this->is_multiple) {
+
+            $this->checkMultipleResponses();
+            return;
+
+        }
+
+        $json = $this->getJsonResponse();
+        $id = (int)$this->lamplight_client->getParameter('id');
+
+        // check property exists and id matches originally passed id
+        if ($json && property_exists($json, 'data')) {
+
+            $this->parseSingleResponseData($json, $id);
+            return;
+
+        }
+
+        $this->was_request_success = false;
+
+    }
+
+
+    /**
+     * @return void
+     */
+    protected function checkMultipleResponses (): void {
+
+        foreach ($this->child_responses as $child) {
+            if ($child->success()) {
+                $this->was_request_success++;
+            }
+        }
+    }
+
+    /**
+     * @param array|\stdClass $json
+     * @param mixed $id
+     * @return void
+     */
+    protected function parseSingleResponseData ($json, ?int $id): void {
+
+        $response_id = false;
+
+        if (is_object($json->data) && property_exists($json->data, 'id')) {
+            $response_id = $json->data->id;
+        }
+        if (is_numeric($json->data) && $json->data > 0) {
+            $response_id = $json->data;
+        }
+        if (!$response_id) {
+            return;
+        }
+
+        // single record: if it has an id, does it match?
+        if ($id > 0) {
+            $this->was_request_success = ($response_id == $id);
+            return;
+        }
+        $this->was_request_success = true;
+
+    }
 
     /**
      * Were there any errors?  Or rather, was it not successful?
@@ -295,11 +308,7 @@ class Response implements \Lamplight\Response, \Iterator {
      * @return String
      */
     public function getResponseStatus () {
-
-        if ($this->response_http_status === null) {
-            $this->response_http_status = $this->response->getStatus();
-        }
-        return $this->response_http_status;
+        return $this->getStatus();
     }
 
 
@@ -314,8 +323,8 @@ class Response implements \Lamplight\Response, \Iterator {
             $json = $this->getJsonResponse();
             if ($json && property_exists($json, 'error')) {
                 $this->lamplight_error_code = $json->error;
+                return $this->lamplight_error_code;
             }
-        } else {
             $this->lamplight_error_code = false;
         }
 
@@ -342,7 +351,7 @@ class Response implements \Lamplight\Response, \Iterator {
                     $this->lamplight_error_message = 'There was an error but no message returned with it';
                 }
             } else {
-                $this->_errorMesage = '';
+                $this->lamplight_error_message = '';
             }
 
         }
@@ -352,48 +361,55 @@ class Response implements \Lamplight\Response, \Iterator {
 
 
     /**
-     * Works out if we've got multi records
+     * @return void
      */
-    protected function _handleMultiples () {
+    protected function createResponsesFromResponse () {
 
-        if ($this->is_multiple === null) {
+        // only need to do this once:
+        if ($this->is_multiple !== null) {
+            return;
+        }
 
-            $json = $this->getJsonResponse();
-            $client = $this->lamplight_client;
-            $id = $client->getParameter('id');
-            $type = $client->getLastLamplightAction();
+        $json = $this->getJsonResponse();
+        $client = $this->lamplight_client;
+        $id = $client->getParameter('id');
 
-            // check property exists and id matches originally passed id
-            if ($json && property_exists($json, 'data')) {
 
-                // this is the multiple one:
-                if (is_array($json->data)) {
+        // check property exists and id matches originally passed id
+        if ($json && property_exists($json, 'data')) {
 
-                    foreach ($json->data as $rec) {
+            // this is the multiple one:
+            if (is_array($json->data)) {
 
-                        $child = new Response(null, $this);
-                        $child->_overRide(
-                            array(
-                                'id' => $rec->id,
-                                'success' => $rec->attend,
-                                'error' => (property_exists($rec, 'error') && $rec->error > 0),
-                                'errorMessage' => (property_exists($rec, 'msg') ? $rec->msg : ''),
-                                'responseJson' => $rec
-                            ),
-                            $this
-                        );
+                foreach ($json->data as $rec) {
 
-                        $this->child_responses[] = $child;
+                    $child = new Response(null, $this);
+                    $child->_overRide(
+                        array(
+                            'id' => $rec->id,
+                            'success' => $rec->attend,
+                            'error' => (property_exists($rec, 'error') && $rec->error > 0),
+                            'errorMessage' => (property_exists($rec, 'msg') ? $rec->msg : ''),
+                            'responseJson' => $rec
+                        ),
+                        $this
+                    );
 
-                    }
+                    $this->child_responses[] = $child;
 
-                    $this->is_multiple = true;
-
-                } else {
-                    $this->is_multiple = false;
-                    $this->record_id = $id;
                 }
+
+                $this->is_multiple = true;
+
+            } else {
+                $this->is_multiple = false;
+                if (!$id && $json->data > 0) {
+                    $this->record_id = (int)$json->data;
+                    return;
+                }
+                $this->record_id = $id;
             }
+
         }
 
     }
@@ -544,4 +560,5 @@ class Response implements \Lamplight\Response, \Iterator {
     public function getReasonPhrase () {
         return $this->getRelevantResponse()->getReasonPhrase();
     }
+
 }
