@@ -20,6 +20,7 @@ class SuccessResponse implements Response {
      */
     protected ResponseInterface $guzzle_response;
 
+
     /**
      * @param ResponseInterface $guzzle_response
      */
@@ -142,6 +143,7 @@ class SuccessResponse implements Response {
     public function withoutHeader ($name) {
         return $this->guzzle_response->withoutHeader($name);
     }
+
 
     /**
      * @return StreamInterface

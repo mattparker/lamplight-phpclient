@@ -187,6 +187,8 @@ abstract class BaseRecord implements \Iterator {
         foreach ($data as $value) {
             if (is_array($value)) {
                 $escaped_strings[] = $this->implodeRecursive($glue, $value);
+            } else if (is_object($value)) {
+                $escaped_strings[] = $this->implodeRecursive($glue, (array)$value);
             } else {
                 $escaped_strings[] = htmlentities($value, ENT_QUOTES, "UTF-8");
             }

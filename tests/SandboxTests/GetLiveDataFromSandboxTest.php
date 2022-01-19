@@ -2,6 +2,7 @@
 
 namespace SandboxTests;
 
+use Lamplight\Record\People;
 use Lamplight\Record\Referral;
 use Lamplight\Record\Work;
 use PHPUnit\Framework\TestCase;
@@ -37,9 +38,20 @@ class GetLiveDataFromSandboxTest extends TestCase {
 
     public function test_get_profile () {
 
-        $profile = $this->sut->fetchPeople('user')->fetchOne(653)->request();
+        $profile_response = $this->sut->fetchPeople('user')->fetchOne(653)->request();
         $expected = '{"data":{"id":"653","name":"Example Staff-Member","summary":"","date_updated":"2022-01-14 16:03:05","first_name":"Example","surname":"Staff-Member","address_line_1":"13a","postcode":"SW1A 1AA","lat":"51.5010089386737000","lng":"-0.141588","northing":"179645","easting":"529090","email":"testing@lamplightdb.co.uk","mobile":"","phone":"","web":"","Food_liked":["Bread","Cheese"]},"meta":{"numRecords":17,"totalRecords":1}}';
-        $this->assertEquals($expected, $profile->getBody()->getContents());
+        $stream = $profile_response->getBody();
+        $this->assertEquals($expected, $stream->getContents());
+
+        $this->assertTrue($profile_response->isSuccessful());
+        $records = $this->sut->getRecordSet();
+        $records->rewind();
+        $this->assertEquals(1, $records->count());
+        $profile = $records->current();
+        $this->assertInstanceOf(People::class, $profile);
+        $this->assertEquals("Example Staff-Member", $profile->get('name'));
+        $this->assertEquals(["Bread", "Cheese"], $profile->get('Food_liked'));
+
     }
 
     public function test_get_all_profiles () {

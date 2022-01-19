@@ -96,9 +96,9 @@ class Factory {
      * @param String $format Default 'json'.  Others may be added in future.
      * @return array
      */
-    protected  function _parseResponseBody ($data, $format = 'json') : ?array {
+    protected  function _parseResponseBody ($data, $format = 'json') {
         // only json supported
-        return json_decode($data, true, JSON_THROW_ON_ERROR);
+        return json_decode($data, false, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -119,7 +119,10 @@ class Factory {
 
         // Get the data as an array
         try {
-            $parsed_data = $this->_parseResponseBody($response->getBody()->getContents());
+            $response_stream = $response->getBody();
+            $response_stream->rewind();
+            $parsed_data = $this->_parseResponseBody($response_stream->getContents());
+
         } catch (\Error $parse_data_error) {
             throw new ParseReturnedDataException($parse_data_error->getMessage(), $parse_data_error->getCode(), $parse_data_error);
         }
@@ -127,20 +130,20 @@ class Factory {
             throw new ParseReturnedDataException('No data found');
         }
 
-        if (!(is_array($parsed_data) && array_key_exists('data', $parsed_data))) {
+        if (!(is_object($parsed_data) && property_exists($parsed_data, 'data'))) {
             return [];
         }
 
-        if (is_object($parsed_data['data'])) {
-            $parsed_data['data'] = array($parsed_data['data']);
+        if (is_object($parsed_data->data)) {
+            $parsed_data->data = [$parsed_data->data];
         }
 
         $records = [];
 
-        if (is_array($parsed_data['data'])) {
-            foreach ($parsed_data['data'] as $rec) {
+        if (is_array($parsed_data->data)) {
+            foreach ($parsed_data->data as $rec) {
                 /** @var BaseRecord $newRec */
-                $newRec = new $recordClass($rec);
+                $newRec = new $recordClass((array)$rec);
                 $newRec->init($client);
                 $records[$newRec->get('id')] = $newRec;
             }
@@ -161,9 +164,9 @@ class Factory {
         $parsed_data = $this->_parseResponseBody($response->getBody()->getContents());
 
         if ($parsed_data) {
-            if (is_array($parsed_data) && array_key_exists('error', $parsed_data)) {
-                $record_set->setErrorCode($parsed_data['error']);
-                $record_set->setErrorMessage($parsed_data['msg']);
+            if (is_object($parsed_data) && property_exists($parsed_data, 'error')) {
+                $record_set->setErrorCode($parsed_data->error);
+                $record_set->setErrorMessage($parsed_data->msg);
                 return;
             }
 

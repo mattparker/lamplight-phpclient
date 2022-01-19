@@ -35,6 +35,7 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
         $response->shouldReceive('getStatus')->andReturn($status);
         $response->shouldReceive('getBody')
             ->andReturn($mock_body = m::mock(StreamInterface::class));
+        $mock_body->shouldReceive('rewind');
         $mock_body->shouldReceive('getContents')->andReturn($body_content);
         $response->shouldReceive('isError')->andReturn($is_error);
 
@@ -113,6 +114,20 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertTrue($record_set->valid());
 
     }
+
+    public function test_successful_response_single_record_for_profile () {
+
+        $data = '{"data":{"id":"653","name":"Example Staff-Member","summary":"","date_updated":"2022-01-14 16:03:05","first_name":"Example","surname":"Staff-Member","address_line_1":"13a","postcode":"SW1A 1AA","lat":"51.5010089386737000","lng":"-0.141588","northing":"179645","easting":"529090","email":"testing@lamplightdb.co.uk","mobile":"","phone":"","web":"","Food_liked":["Bread","Cheese"]},"meta":{"numRecords":17,"totalRecords":1}}';
+        $response = $this->prepareResponse(200, false, $data);
+        $this->prepareClient('one', 'people', $response);
+        $this->mock_client->shouldReceive('getParameter')->once()->with('role')->andReturn(Client::FUNDER_ROLE);
+
+        $record_set = $this->sut->makeRecordSetFromData($this->mock_client);
+
+        $this->assertEquals(1, $record_set->count());
+    }
+
+
 
     public function test_error_with_response_and_bad_response () {
 
