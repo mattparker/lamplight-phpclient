@@ -1,9 +1,11 @@
 <?php
 namespace Lamplight\Datain;
 
+
 use Lamplight\Client;
 use Lamplight\Datain\Exception\LastRequestWasNotDataInException;
 use Lamplight\Response\SuccessResponse;
+use Psr\Http\Message\StreamInterface;
 
 /**
  *
@@ -41,7 +43,10 @@ use Lamplight\Response\SuccessResponse;
  *
  *
  */
-class Response extends SuccessResponse implements \Iterator {
+class Response implements \Lamplight\Response, \Iterator {
+
+
+
 
     /**
      * @var SuccessResponse          The response created
@@ -462,5 +467,78 @@ class Response extends SuccessResponse implements \Iterator {
         return $var;
     }
 
+    protected function getRelevantResponse () : \Lamplight\Response {
+        if ($this->_response) {
+            return $this->_response;
+        }
+        return $this->_parentResponse;
+    }
 
+    public function getProtocolVersion () {
+        return $this->getRelevantResponse()->getProtocolVersion();
+    }
+
+    public function withProtocolVersion ($version) {
+        return $this->getRelevantResponse()->withProtocolVersion($version);
+    }
+
+    public function getHeaders () {
+        return $this->getRelevantResponse()->getHeaders();
+    }
+
+    public function hasHeader ($name) {
+        return $this->getRelevantResponse()->hasHeader($name);
+    }
+
+    public function getHeader ($name) {
+        return $this->getRelevantResponse()->getHeader($name);
+    }
+
+    public function getHeaderLine ($name) {
+        return $this->getRelevantResponse()->getHeaderLine($name);
+    }
+
+    public function withHeader ($name, $value) {
+        return $this->getRelevantResponse()->withHeader($name, $value);
+    }
+
+    public function withAddedHeader ($name, $value) {
+        return $this->getRelevantResponse()->withAddedHeader($name, $value);
+    }
+
+    public function withoutHeader ($name) {
+        return $this->getRelevantResponse()->withoutHeader($name);
+    }
+
+    public function getBody () {
+        return $this->getRelevantResponse()->getBody();
+    }
+
+    public function withBody (StreamInterface $body) {
+        return $this->getRelevantResponse()->withBody($body);
+    }
+
+    public function getStatus (): int {
+        return $this->getRelevantResponse()->getStatus();
+    }
+
+    public function isError (): bool {
+        return $this->getRelevantResponse()->isError();
+    }
+
+    public function isSuccessful (): bool {
+        return $this->getRelevantResponse()->isSuccessful();
+    }
+
+    public function getStatusCode () {
+        return $this->getRelevantResponse()->getStatusCode();
+    }
+
+    public function withStatus ($code, $reasonPhrase = '') {
+        return $this->getRelevantResponse()->withStatus($code, $reasonPhrase);
+    }
+
+    public function getReasonPhrase () {
+        return $this->getRelevantResponse()->getReasonPhrase();
+    }
 }

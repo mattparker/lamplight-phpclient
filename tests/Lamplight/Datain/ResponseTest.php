@@ -33,6 +33,8 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
 
         $this->client->shouldReceive('getLastResponse')->andReturn($response);
 
+        return $response;
+
     }
 
 
@@ -158,4 +160,108 @@ class ResponseTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertFalse($sut->success());
         $this->assertEquals(1026, $sut->getErrorCode());
     }
+
+    public function test_interface_methods_pass_through_to_client_response () {
+
+        $content = json_encode(['data' => $id = 123]);
+        $this->prepareLastActionMethod('work', 'attend');
+        $response = $this->prepareLastResponse($content, 200);
+
+        $this->client->shouldReceive('getParameter')->with('id')->andReturn($id);
+
+        $response->shouldReceive('getProtocolVersion')->once();
+        $response->shouldReceive('withProtocolVersion')->once();
+        $response->shouldReceive('getHeaders')->once();
+        $response->shouldReceive('hasHeader')->once();
+        $response->shouldReceive('getHeader')->once();
+        $response->shouldReceive('getHeaderLine')->once();
+        $response->shouldReceive('withHeader')->once();
+        $response->shouldReceive('withAddedHeader')->once();
+        $response->shouldReceive('withoutHeader')->once();
+        $response->shouldReceive('withBody')->once();
+        $response->shouldReceive('isError')->once();
+        $response->shouldReceive('isSuccessful')->once();
+        $response->shouldReceive('getStatusCode')->once();
+        $response->shouldReceive('withStatus')->once();
+        $response->shouldReceive('getReasonPhrase')->once();
+
+        // These two are mocked in `prepareLastResponse` call already - don't need it again.
+        //      $response->shouldReceive('getBody')->once();
+        //      $response->shouldReceive('getStatus')->once();
+
+
+        $sut = new Response($this->client);
+
+        $sut->getProtocolVersion();
+        $sut->withProtocolVersion(1);
+        $sut->getHeaders();
+        $sut->hasHeader('Content-Type');
+        $sut->getHeader('Content-Type');
+        $sut->getHeaderLine('Content-Type');
+        $sut->withHeader('Content-Type', 'text/html');
+        $sut->withAddedHeader('Content-Type', 'text/html');
+        $sut->withoutHeader('Content-Type');
+        $sut->getBody();
+           $sut->withBody(m::mock(StreamInterface::class));
+           $sut->getStatus();
+           $sut->isError();
+           $sut->isSuccessful();
+           $sut->getStatusCode();
+           $sut->withStatus(201, 'test');
+           $sut->getReasonPhrase();
+
+
+    }
+
+
+
+    public function test_interface_methods_pass_through_to_parent_response_if_no_client () {
+
+        $id = 123;
+        $response = m::mock(Response::class);
+
+        $this->client->shouldReceive('getParameter')->with('id')->andReturn($id);
+
+        $response->shouldReceive('getProtocolVersion')->once();
+        $response->shouldReceive('withProtocolVersion')->once();
+        $response->shouldReceive('getHeaders')->once();
+        $response->shouldReceive('hasHeader')->once();
+        $response->shouldReceive('getHeader')->once();
+        $response->shouldReceive('getHeaderLine')->once();
+        $response->shouldReceive('withHeader')->once();
+        $response->shouldReceive('withAddedHeader')->once();
+        $response->shouldReceive('withoutHeader')->once();
+        $response->shouldReceive('withBody')->once();
+        $response->shouldReceive('isError')->once();
+        $response->shouldReceive('isSuccessful')->once();
+        $response->shouldReceive('getStatusCode')->once();
+        $response->shouldReceive('withStatus')->once();
+        $response->shouldReceive('getReasonPhrase')->once();
+        $response->shouldReceive('getBody')->once();
+        $response->shouldReceive('getStatus')->once();
+
+
+        $sut = new Response(null, $response);
+
+        $sut->getProtocolVersion();
+        $sut->withProtocolVersion(1);
+        $sut->getHeaders();
+        $sut->hasHeader('Content-Type');
+        $sut->getHeader('Content-Type');
+        $sut->getHeaderLine('Content-Type');
+        $sut->withHeader('Content-Type', 'text/html');
+        $sut->withAddedHeader('Content-Type', 'text/html');
+        $sut->withoutHeader('Content-Type');
+        $sut->getBody();
+        $sut->withBody(m::mock(StreamInterface::class));
+        $sut->getStatus();
+        $sut->isError();
+        $sut->isSuccessful();
+        $sut->getStatusCode();
+        $sut->withStatus(201, 'test');
+        $sut->getReasonPhrase();
+
+
+    }
+
 }
