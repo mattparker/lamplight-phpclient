@@ -42,12 +42,6 @@ use Lamplight\Response\SuccessResponse;
  */
 abstract class Mutable extends BaseRecord {
 
-
-    /**
-     * @var Boolean       Whether this type of record is editable
-     */
-    protected bool $editable = true;
-
     /**
      * @var String        The method used for sending requests via the API
      */
@@ -106,7 +100,7 @@ abstract class Mutable extends BaseRecord {
      * @return Boolean
      */
     public function isEditable () : bool {
-        return $this->editable;
+        return true;
     }
 
 
@@ -127,10 +121,6 @@ abstract class Mutable extends BaseRecord {
      */
     public function set ($field, $value) : BaseRecord {
 
-
-        if (!$this->editable) {
-            throw new \Exception("You cannot change this type of Record");
-        }
         if (!is_string($field)) {
             throw new \Exception("Fields to be set must be strings");
         }
@@ -157,9 +147,9 @@ abstract class Mutable extends BaseRecord {
      *
      */
     public function setAttendee ($attendee_identifier) : BaseRecord {
-        if ($this->editable) {
-            $this->data['attendee'] = $attendee_identifier;
-        }
+
+        $this->data['attendee'] = $attendee_identifier;
+
         return $this;
     }
 
@@ -170,9 +160,6 @@ abstract class Mutable extends BaseRecord {
      *
      */
     public function setWorkarea ($workareaID) : BaseRecord {
-        if (!$this->editable) {
-            return $this;
-        }
         if (is_string($workareaID) && strstr($workareaID, ',')) {
             $this->data['workarea'] = $workareaID;
             return $this;

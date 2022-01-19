@@ -5,9 +5,12 @@ namespace Lamplight;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use Lamplight\Client\Exception\MayNotRequestAllWorkException;
+use Lamplight\Datain\ResponseCollection;
+use Lamplight\Datain\ResponseCollectionFactory;
+use Lamplight\Record\Mutable;
 use Lamplight\RecordSet\NoRequestMadeToMakeRecordsFromException;
 use Lamplight\Response\ErrorResponse;
-use Lamplight\Response\SuccessResponse;
 
 /**
  *
@@ -51,6 +54,8 @@ use Lamplight\Response\SuccessResponse;
  *
  */
 class Client {
+
+
     const USER_ROLE = 'user';
     const CONTACT_ROLE = 'contact';
     const STAFF_ROLE = 'staff';
@@ -152,7 +157,7 @@ class Client {
      * @return Client     Fluent interface
      */
     public function resetClient () : Client {
-        // TODO come back to this...
+
         $this->lamplight_action = "";
         $this->lamplight_method = "";
 
@@ -193,10 +198,10 @@ class Client {
      * Add a key/value pair to a GET request
      * @param $key
      * @param $value
-     * @return void
      */
-    public function setParameterGet ($key, $value) {
+    public function setParameterGet ($key, $value) : Client {
         $this->query_params[$key] = $value;
+        return $this;
     }
 
     /**
@@ -205,12 +210,14 @@ class Client {
      * @param $value
      * @return void
      */
-    public function setParameterPost ($key, $value) {
+    public function setParameterPost ($key, $value) : Client {
         $this->form_params[$key] = $value;
+        return $this;
     }
 
-    public function setMethod (string $method) {
+    public function setMethod (string $method) : Client {
         $this->http_method = $method;
+        return $this;
     }
 
     /**
@@ -337,19 +344,17 @@ class Client {
     ////////////////////////////////////////////////////////////////
     // Datain methods
 
-
     /**
-     * Add someone to attend a work record
-     * @param Int          ID of work record
-     * @param String       Email address of person wanting to attend
-     * @return Client    Fluent interface
+     * @param int $recordid
+     * @param int|string $identifier_of_attendee ID or email address of attendee
+     * @return $this
      */
-    public function attendWork ($recordid, $emailOfAttendee) : Client {
+    public function attendWork (int $recordid, $identifier_of_attendee) : Client {
         // this is work
         $this->fetchWork();
         $this->setParameterPost('id', $recordid);
         // set it to attend, POST submision + attendee param
-        $this->_attend($emailOfAttendee);
+        $this->_attend($identifier_of_attendee);
 
         return $this;
 
@@ -358,15 +363,11 @@ class Client {
 
     /**
      * Saves a Lamplight_Record* if that is allowed by the API
-     * @param \Lamplight\Record\Mutable    With all the data to save
+     * @param Mutable $record   With all the data to save
      * @return  Response Object
      * @throws \Exception
      */
-    public function save (\Lamplight\Record\Mutable $record) {
-
-        if (!$record->isEditable()) {
-            throw new \Exception("You are trying to save a record that is not editable");
-        }
+    public function save (Mutable $record) {
 
         $record->beforeSave($this);
 
@@ -389,28 +390,29 @@ class Client {
 
 
     /**
-     * Sets up a new Lamplight_Datain_Response instance
+     * Sets up a new ResponseCollection instance
      * to wrap the response returned and provides
      * convenience methods to access response.  This will
      * only work for datain type responses - calling this after
      * fetch* requests will throw an Exception
      *
-     * @return \Lamplight\Datain\Response
+     * @return ResponseCollection
      */
-    public function getDatainResponse () : \Lamplight\Datain\Response {
-        return new \Lamplight\Datain\Response($this);
+    public function getDatainResponse () : ResponseCollection {
+        return (new ResponseCollectionFactory())->createResponseFromClient($this);
     }
+
 
 
     /**
      * Sets method to attend and adds the attendee
-     * @param String     Email address of person wanting to attend
+     * @param int | string     ID or Email address of person wanting to attend
      * @return Client
      */
-    protected function _attend ($emailOfAttendee) : Client {
+    protected function _attend ($identifier_of_attendee) : Client {
         $this->setMethod('POST');
         $this->lamplight_method = "attend";
-        $this->setParameterPost('attendee', $emailOfAttendee);
+        $this->setParameterPost('attendee', $identifier_of_attendee);
         return $this;
     }
 
@@ -458,6 +460,10 @@ class Client {
             throw new \Exception("Lamplight API access parameters have not been set");
         }
 
+        if ($this->lamplight_action === 'work' && $this->lamplight_method === 'all') {
+            throw new MayNotRequestAllWorkException("Requesting all work records is not supported");
+        }
+
 
         // Set up the main uri with method and parameters etc.
         $uri = $this->_constructUri();
@@ -473,7 +479,6 @@ class Client {
             $params = ['query' => $this->query_params, 'form_params' => $this->form_params];
         }
 
-        // TODO $response may need a new class to reflect previous API
         try {
             $response = $this->client->request($this->http_method, $uri, $params);
             $lamplight_response = new Response\SuccessResponse($response);

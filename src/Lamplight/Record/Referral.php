@@ -44,14 +44,6 @@ class Referral extends Mutable {
 
 
     /**
-     * We do allow editing referrals because we can make new ones
-     * via the API
-     * @param bool
-     */
-    protected bool $editable = true;
-
-
-    /**
      * @var string        The method used for sending requests via the API
      */
     protected string $lamplightMethod = 'add';
