@@ -6,6 +6,7 @@ use Lamplight\Record\People;
 use Lamplight\Record\Referral;
 use Lamplight\Record\Relationship;
 use Lamplight\Record\Work;
+use Lamplight\Record\WorkareaSummary;
 use Lamplight\Record\WorkSummary;
 use PHPUnit\Framework\TestCase;
 use Lamplight\Client;
@@ -36,6 +37,10 @@ class GetLiveDataFromSandboxTest extends TestCase {
 
         $expected = '{"data":[{"id":"1","text":"Sports and games","children":[{"id":"2","text":"Table tennis"},{"id":"3","text":"sunbathing"}]},{"id":"4","text":"Learning and Education","children":[]}],"meta":{"numResults":2,"totalRecords":2}}';
         $this->assertEquals($expected, $workareas->getBody()->getContents());
+
+        $records = $this->sut->getRecordSet();
+        $this->assertInstanceOf(WorkareaSummary::class, $records->current());
+        $this->assertCount(2, $records);
     }
 
     public function test_get_profile () {
