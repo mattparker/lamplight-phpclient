@@ -4,6 +4,17 @@ namespace Lamplight\Datain;
 
 /**
  *
+ * Lamplight php API client
+ *
+ * Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * Code licensed under the BSD License:
+ * http://www.lamplight-publishing.co.uk/license.php
+ *
+ * @category   Lamplight
+ * @author     Matt Parker <matt@lamplightdb.co.uk>
+ * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
+ * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
+ * @version    2.0 New version - Simple Value Object holding details of saved record, or errors
  */
 class SavedRecordResponse {
 

@@ -3,7 +3,9 @@
 namespace Lamplight\Datain;
 
 
+use Lamplight\Response as LamplightResponse;
 use Psr\Http\Message\StreamInterface;
+
 /**
  *
  * Lamplight php API client
@@ -18,7 +20,7 @@ use Psr\Http\Message\StreamInterface;
  * @license    http://www.lamplight-publishing.co.uk/license.php   BSD License
  * @version    2.0 New version - Added ResponseCollection to replace Lamplight_Datain_Response
  */
-class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
+class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
 
     /**
      * @var SavedRecordResponse[]
@@ -30,9 +32,9 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
     protected int $saved_record_pointer = 0;
 
     /**
-     * @var \Lamplight\Response
+     * @var LamplightResponse
      */
-    protected \Lamplight\Response $response;
+    protected LamplightResponse $response;
 
     /**
      * @var bool
@@ -41,10 +43,10 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
 
 
     /**
-     * @param \Lamplight\Response $response
+     * @param LamplightResponse $response
      * @param array $saved_record_responses
      */
-    public function __construct (\Lamplight\Response $response, array $saved_record_responses = []) {
+    public function __construct (LamplightResponse $response, array $saved_record_responses = []) {
 
         $this->response = $response;
         foreach ($saved_record_responses as $saved_record_response) {
@@ -161,7 +163,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
 
     /**
      * @param $version
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withProtocolVersion ($version) {
         return $this->response->withProtocolVersion($version);
@@ -201,7 +203,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
     /**
      * @param $name
      * @param $value
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withHeader ($name, $value) {
         return $this->response->withHeader($name, $value);
@@ -210,7 +212,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
     /**
      * @param $name
      * @param $value
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withAddedHeader ($name, $value) {
         return $this->response->withAddedHeader($name, $value);
@@ -218,7 +220,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
 
     /**
      * @param $name
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withoutHeader ($name) {
         return $this->response->withoutHeader($name);
@@ -233,7 +235,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
 
     /**
      * @param StreamInterface $body
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withBody (StreamInterface $body) {
         return $this->response->withBody($body);
@@ -270,7 +272,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
     /**
      * @param $code
      * @param $reasonPhrase
-     * @return ResponseCollection|\Lamplight\Response
+     * @return LamplightResponse
      */
     public function withStatus ($code, $reasonPhrase = '') {
         return $this->response->withStatus($code, $reasonPhrase);
