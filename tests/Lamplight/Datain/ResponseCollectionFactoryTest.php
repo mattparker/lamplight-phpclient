@@ -27,6 +27,7 @@ class ResponseCollectionFactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
 
         $response = m::mock(\Lamplight\Response\SuccessResponse::class);
         $body = m::mock(StreamInterface::class);
+        $body->shouldReceive('rewind');
         $response->shouldReceive('getBody')->andReturn($body);
 
         $body->shouldReceive('getContents')->andReturn($json_encoded_response);
@@ -200,6 +201,42 @@ class ResponseCollectionFactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
         $this->assertEquals(1, $collection->count());
         $this->assertEquals(1026, $collection->getErrorCode());
 
+    }
+
+
+    public function test_create_relationship () {
+
+        $content = '{"msg":"Relationship created"}';
+        $this->prepareLastActionMethod('people', 'relationship');
+        $this->prepareLastResponse($content, 200);
+
+        $this->client->shouldReceive('getParameter')->with('id')->andReturn($id = 30936);
+
+        $collection = (new ResponseCollectionFactory())->createResponseFromClient($this->client);
+
+
+        $this->assertTrue($collection->success());
+        $this->assertEquals(1, $collection->count());
+        $this->assertEquals(0, $collection->getErrorCode());
+        $this->assertEquals($id, $collection->current()->getId());
+    }
+
+
+    public function test_failed_to_create_relationship () {
+
+        $content = '';
+        $this->prepareLastActionMethod('people', 'relationship');
+        $this->prepareLastResponse($content, 200);
+
+        $this->client->shouldReceive('getParameter')->with('id')->andReturn($id = 30936);
+
+        $collection = (new ResponseCollectionFactory())->createResponseFromClient($this->client);
+
+
+        $this->assertFalse($collection->success());
+        $this->assertEquals(1, $collection->count());
+        $this->assertEquals(1072, $collection->getErrorCode());
+        $this->assertEquals($id, $collection->current()->getId());
     }
 
 }

@@ -29,7 +29,7 @@ use Lamplight\Response\SuccessResponse;
  * mutability - ie Records that may be altered via the API.
  *
  * @category   Lamplight
- * @package    Lamplight_Record
+ * @package    Lamplight\Record
  * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
  * @license    http://www.lamplight-publishing.co.uk/license.php    BSD License
  * @author     Matt Parker <matt@lamplightdb.co.uk>

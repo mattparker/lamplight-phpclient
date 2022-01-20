@@ -56,6 +56,7 @@ class ResponseCollectionFactory {
     protected function createResponseCollectionFromResponse (LamplightResponse $response) : ResponseCollection {
 
         $this->response = $response;
+        $response->getBody()->rewind();
         $response_body = json_decode($response->getBody()->getContents());
 
 
@@ -73,6 +74,14 @@ class ResponseCollectionFactory {
 
             return $this->handleErrorResponse($response, $response_body);
 
+        } else if ($response_body && property_exists($response_body, 'msg') && $response_body->msg == 'Relationship created') {
+            return $this->handleSingleResponse($response, $response_body, $this->client->getParameter('id'));
+        }
+
+        if ($this->client->getLastLamplightMethod() === 'relationship') {
+            return new ResponseCollection($response, [
+                new SavedRecordResponse($this->client->getParameter('id'), false, 1072, 'Relationship not created')]
+            );
         }
 
         return new ResponseCollection($response);
@@ -93,6 +102,7 @@ class ResponseCollectionFactory {
             "referral/add",
             "people/add",
             "people/update",
+            "people/relationship",
             "orgs/add",
             "orgs/update"
         );
@@ -146,13 +156,13 @@ class ResponseCollectionFactory {
 
         $collection = new ResponseCollection($response);
 
-        if (is_object($response_body->data)) {
+        if (property_exists($response_body, 'data') && is_object($response_body->data)) {
 
             $collection->addSavedResponse($this->makeResponseFromData($response_body->data));
             return $collection;
 
         }
-        if (!$id_of_record_sent_by_client && $response_body->data > 0) {
+        if (!$id_of_record_sent_by_client && property_exists($response_body, 'data') && $response_body->data > 0) {
 
             $collection->addSavedResponse(new SavedRecordResponse(
                 (int)$response_body->data, true

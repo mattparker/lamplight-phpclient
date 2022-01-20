@@ -4,6 +4,7 @@ namespace SandboxTests;
 
 use Lamplight\Record\People;
 use Lamplight\Record\Referral;
+use Lamplight\Record\Relationship;
 use Lamplight\Record\Work;
 use Lamplight\Record\WorkSummary;
 use PHPUnit\Framework\TestCase;
@@ -173,6 +174,24 @@ class GetLiveDataFromSandboxTest extends TestCase {
         $this->assertTrue($saved_referral->isSuccessful());
         $this->assertTrue($saved_referral->current()->getId() > 0);
 
+    }
+
+
+    public function test_add_relationship () {
+
+        $rel = new Relationship();
+        $rel->setRelationship(658, 661, 5);
+        $response = $this->sut->save($rel);
+
+        $expected = '{"msg":"Relationship created"}';
+        $this->assertEquals($expected, $response->getBody()->getContents());
+
+
+        $datain = $this->sut->getDatainResponse();
+        $this->assertTrue($datain->success());
+
+        $this->assertEquals(1, $datain->count());
+        $this->assertEquals(658, $datain->current()->getId());
 
 
     }
