@@ -128,11 +128,52 @@ class GetLiveDataFromSandboxTest extends TestCase {
 
     }
 
+
     public function test_add_referral () {
         $record = new Referral(['attendee' => 653, 'reason' => 'testing 44', 'date' => '2022-01-01 13:13']);
         $response = $this->sut->save($record);
 
         $expected = '{"data":{"id":30939,"attend":true},"meta":""}';
         $this->assertEquals($expected, $response->getBody()->getContents());
+    }
+
+
+    public function test_create_profile_then_referral () {
+
+        $profile = new People([
+            'role' => Client::USER_ROLE,
+            'first_name' => 'Harold',
+            'surname' => 'Smith',
+            'postcode' => 'SW1A 1AA',
+            'Gender' => 'Not willing to say',
+            'Date_of_birth' => '1980-01-01',
+            'Lives_in_area?' => '1',
+            'publishable' => '1'
+        ]);
+        $this->sut->save($profile);
+
+        $saved_response = $this->sut->getDatainResponse();
+
+        $this->assertTrue($saved_response->success());
+        $profile_id = $saved_response->current()->getId();
+
+        $this->assertTrue($profile_id > 0);
+
+        // now add to referral
+        $referral = new Referral([
+            'attendee' => $profile_id,
+            'reason' => 'Test new referral',
+            'referrer' => 654
+        ]);
+        $referral->setWorkarea("1,3");
+        $this->sut->resetClient();
+        $this->sut->save($referral);
+        $saved_referral = $this->sut->getDatainResponse();
+
+        $this->assertTrue($saved_referral->isSuccessful());
+        $this->assertTrue($saved_referral->current()->getId() > 0);
+
+
+
     }
 }

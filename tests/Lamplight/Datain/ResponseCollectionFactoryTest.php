@@ -112,11 +112,13 @@ class ResponseCollectionFactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
 
         $this->assertFalse($collection->isMultiple());
         $this->assertTrue($collection->success());
-        $this->assertEquals(1, $collection->count(), 'No "child" responses');
-        $this->assertEquals(0, $collection->getErrorCode());
 
         $single_record = $collection->current();
         $this->assertEquals($id, $single_record->getId());
+
+        $this->assertEquals(1, $collection->count(), 'No "child" responses');
+        $this->assertEquals(0, $collection->getErrorCode());
+
 
     }
 

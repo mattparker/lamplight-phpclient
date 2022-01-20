@@ -56,7 +56,7 @@ class ResponseCollection implements \Countable, \Iterator, \Lamplight\Response {
      * @param SavedRecordResponse $saved_record_response
      * @return void
      */
-    protected function addSavedResponse (SavedRecordResponse $saved_record_response) {
+    public function addSavedResponse (SavedRecordResponse $saved_record_response) {
         $this->saved_record_responses[] = $saved_record_response;
         $this->overall_success = $this->overall_success && $saved_record_response->success();
     }
