@@ -20,7 +20,7 @@ Note that these parameters can be passed as query pairs or as part of the path i
 
 ## Data returned
 
-Data returned from GET requests will by a json structure like this:
+Data returned from GET requests will be a json structure like this:
 
 ```json
 {
@@ -37,6 +37,10 @@ Data returned from GET requests will by a json structure like this:
 Although the fields in the data array will vary depending on the data type.
 
 
+## PHP Client
+
+The php client makes it easy to interact with the Lamplight API.  This new version aims to be backwards compatible
+with the previous version as far as possible, but make use of modern php and standards (php 7.4+). 
 
 
 ## Contents

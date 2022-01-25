@@ -17,6 +17,7 @@ You will also need to send the following parameters
 | Param    | Type          | Notes                                                                                                 |
 |----------|---------------|-------------------------------------------------------------------------------------------------------|
 | attendee | string or int | Identifier of the attendee - email address or Lamplight profile ID                                    |
+| referrer | string or int | Identifier of the referrer - email address of Lamplight profile ID |
 | referral_reason | string | Plain text, which populates the 'referral reason' field in Lamplight                                  |
 | date_from | string | Date of referral, in YYYY-mm-dd format. Uses current date time if none passed                         |
 | workareaid | int | ID of workarea to attach to the record                                                                |
@@ -24,6 +25,9 @@ You will also need to send the following parameters
 
 Custom referral fields can also be added, where they have been set to be updatable in the system admin section. To add
 custom field values, send the field name (with spaces replaced by underscores) and valid data.
+
+Lamplight will not create profiles for the attendee or referrer if they do not already exist: you may need to do this 
+first.
 
 The return data will be the ID of the record created:
 
