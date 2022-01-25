@@ -185,6 +185,74 @@ will output
 You cannot request all record through the API. Use `some`.
 
 
+
+## Adding attendees to work records
+
+You can add attendees to work records by POSTing data to `https://lamplight.online/api/work/attend/`.
+You will need the Lamplight IDs of the records, and an identifier for the attendee - either an email address or an ID.
+
+There are separate configuration settings within Lamplight to enable this.
+
+Send the data in your POST request:
+
+| Param    | Type          | Notes                                                   |
+|----------|---------------|---------------------------------------------------------|
+| id       | int or string | ID of the work record, or a comma-separated list of IDs |
+| attendee | int or string | ID of the profile, or email address of the profile already in Lamplight |
+
+Lamplight will try and add the attendee to the record, and provide a response for each indicating whether 
+it was successful.  So a request to add someone to work record IDs 123 and 456 would return this:
+
+```json
+{
+  "data": [
+    {
+      "id":123,
+      "attend":true
+    },
+    {
+      "id":456,
+      "attend":false
+    }
+  ]
+}
+
+```
+
+There are a number of reasons this may fail:
+ - settings do not allow it
+ - the particular work record does not allow adding attendees via the API
+ - the particular work record is full - the number of users attending is greater than or equal to the maximum set for the record
+ - with email addresses, the attendee can't be identified unambiguously - either the email isn't found, or more than one record was found with that email
+
+
+### Adding attendees using the php client
+
+To add using the client, first create a `Lamplight\Record\Work` record and then `save` it with the client:
+
+```php
+
+// create the record
+$record = new \Lamplight\Record\Work(['id' => 123]);
+// the attendee can either be an email address or a Lamplight profile ID
+$record->setAttendee('testing@example.com');
+
+// use the client to save the record
+$client = new \Lamplight\Client(null, $api_credentials);
+$client->save($record);
+
+// the client creates this based on the data sent
+$response = $client->getDatainResponse();
+if ($response->isSuccessful()) {
+    // all records attended ok:
+    echo 'Great, thanks';
+} else {
+    // handle the error
+    echo 'Please contact us directly to confirm your attendance';
+}
+```
+
+
 ## Workareas
 
 Workareas are categories added to work and other activity records in Lamplight.  They are a hierarchical list:
