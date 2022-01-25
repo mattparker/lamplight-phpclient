@@ -13,8 +13,10 @@ These should be added to every request.  You also need to include a format=json 
 would like something like this:
 
 ```
-https://lamplight.online/api/workarea/all?format=json&lampid=123&project=4&key=laksdmlaskdmflismlskmdf
+https://lamplight.online/api/workarea/all?format=json&lampid=123&project=4&key=<api_key>
 ```
+
+Note that these parameters can be passed as query pairs or as part of the path if you prefer.
 
 ## Data returned
 

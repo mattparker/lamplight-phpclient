@@ -20,6 +20,8 @@ this repository.
 
 [Creating referral records](referral.html)
 
+[Error codes](errors.html)
+
 ## Getting started:
 
 1. Login to the Lamplight system you are integrating with as a system administrator.

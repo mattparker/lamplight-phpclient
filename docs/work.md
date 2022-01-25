@@ -195,10 +195,12 @@ There are separate configuration settings within Lamplight to enable this.
 
 Send the data in your POST request:
 
-| Param    | Type          | Notes                                                   |
-|----------|---------------|---------------------------------------------------------|
-| id       | int or string | ID of the work record, or a comma-separated list of IDs |
-| attendee | int or string | ID of the profile, or email address of the profile already in Lamplight |
+| Param    | Type          | Notes                                                                             |
+|----------|---------------|-----------------------------------------------------------------------------------|
+| id       | int or string | Required: ID of the work record, or a comma-separated list of IDs                 |
+| attendee | int or string | Required: ID of the profile, or email address of the profile already in Lamplight |
+| attendee_notes | string | Optional text added to the 'notes' on the attendance in Lamplight |
+
 
 Lamplight will try and add the attendee to the record, and provide a response for each indicating whether 
 it was successful.  So a request to add someone to work record IDs 123 and 456 would return this:
