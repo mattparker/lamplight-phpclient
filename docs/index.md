@@ -10,6 +10,16 @@ the built-in widgets.
 This API documentation documents the API endpoints and also the php client that uses them and is available from
 this repository.
 
+## Contents
+
+[Introduction and authentication](api.html)
+
+[Requesting and creating profiles](profiles.html)
+
+[Requesting and attending work records](work.html)
+
+[Creating referral records](referral.html)
+
 ## Getting started:
 
 1. Login to the Lamplight system you are integrating with as a system administrator.
