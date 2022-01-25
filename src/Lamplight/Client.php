@@ -303,13 +303,13 @@ class Client {
     /**
      * Allows geographic search
      * @param String            Lat,Long | Northing,Easting | Postcode
-     * @param Int               Search radius
+     * @param Int               Search radius (in m)
      * @return Client
      * @since 1.21
      */
-    public function near (string $where, $howClose) : Client {
+    public function near (string $where, $how_close_in_metres) : Client {
         $this->setParameterGet('near', $where);
-        $this->setParameterGet('nearRadius', $howClose);
+        $this->setParameterGet('nearRadius', $how_close_in_metres);
         $this->returnFullData();
         return $this;
     }

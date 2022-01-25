@@ -11,7 +11,7 @@ Use the endpoint:
 https://lamplight.online/api/work/some/
 ```
 
-with the following parameters:
+with any (or none) of the following parameters:
 
 | Param | Type | Notes |
 | --- | --- | --- |
@@ -165,7 +165,8 @@ if ($response->isSuccessful()) {
     // Ask the client for the RecordSet, with the data parsed from the response
     $work_records = $client->getRecordSet();
     // Render each with a template:
-    $template = '<span class="date">{start_date}</span><div><h2>{title}</h2><p>{description}</p></div>';
+    $template = '<span class="date">{start_date}</span>
+        <div><h2>{title}</h2><p>{description}</p></div>';
     echo $work_records->render($template, "\n");
 } else {
     // handle the error
@@ -175,6 +176,46 @@ if ($response->isSuccessful()) {
 will output
 
 ```html 
-<span class="date">2022-01-02 14:00:00</span><div><h2>This is a test record</h2><p>Text from the record, if settings allow</p></div>
+<span class="date">2022-01-02 14:00:00</span>
+    <div><h2>This is a test record</h2><p>Text from the record, if settings allow</p></div>
+```
+
+### Fetching all work records.
+
+You cannot request all record through the API. Use `some`.
+
+
+## Workareas
+
+Workareas are categories added to work and other activity records in Lamplight.  They are a hierarchical list:
+each activity record must have a workarea and may have any number of sub-workareas.
+
+The uri to request all workareas is `https://lamplight.online/api/workarea/all`.
+
+The response will be a structure like this:
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "text": "First workarea",
+      "children": [
+        {
+          "id": 192,
+          "text": "A sub-workarea"
+        },
+        {
+          "id": 89,
+          "text": "Another sub-workarea"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "text": "Advice work - workarea with no subworkareas", 
+      "children": []
+    }
+]}
 ```
 
