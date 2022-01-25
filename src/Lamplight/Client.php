@@ -3,8 +3,6 @@
 namespace Lamplight;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Lamplight\Client\Exception\MayNotRequestAllWorkException;
 use Lamplight\Datain\ResponseCollection;
 use Lamplight\Datain\ResponseCollectionFactory;
