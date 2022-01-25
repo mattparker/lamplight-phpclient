@@ -36,3 +36,19 @@ Data returned from GET requests will by a json structure like this:
 
 Although the fields in the data array will vary depending on the data type.
 
+
+
+
+## Contents
+
+[Introduction and authentication](api.html)
+
+[Requesting and creating profiles](profiles.html)
+
+[Requesting and attending work records](work.html)
+
+[Creating referral records](referral.html)
+
+[Error codes](errors.html)
+
+[Hints and tips](hints.htmls)

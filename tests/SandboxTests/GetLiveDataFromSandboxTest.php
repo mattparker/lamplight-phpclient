@@ -22,9 +22,9 @@ class GetLiveDataFromSandboxTest extends TestCase {
     protected $sut;
 
     public function setUp (): void {
-        $key = '924745a1fc33ce412c55ab0698891b45951c16e8ad738241baed9c4214759f57';
-        $lampid = 561;
-        $projectid = 4;
+        $key = 'key here';
+        $lampid = 1;
+        $projectid = 1;
 
         $this->sut = new Client(null, ['key' => $key, 'lampid' => $lampid, 'project' => $projectid]);
 

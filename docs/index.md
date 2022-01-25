@@ -22,6 +22,9 @@ this repository.
 
 [Error codes](errors.html)
 
+[Hints and tips](hints.htmls)
+
+
 ## Getting started:
 
 1. Login to the Lamplight system you are integrating with as a system administrator.

@@ -70,3 +70,19 @@ include additional information about the error to help you resolve it.
     <dt>9999</dt>
     <dd>Data provided may have been a malicious attack and has not been added. Specifically, POSTed content includes html tags and the request is immediately rejected.</dd>
 </dl>
+
+
+
+## Contents
+
+[Introduction and authentication](api.html)
+
+[Requesting and creating profiles](profiles.html)
+
+[Requesting and attending work records](work.html)
+
+[Creating referral records](referral.html)
+
+[Error codes](errors.html)
+
+[Hints and tips](hints.htmls)
