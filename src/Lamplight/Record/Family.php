@@ -22,7 +22,7 @@ namespace Lamplight\Record;
 /**
  *
  *
- * Lamplight\Record\People holds detailed data about a person
+ * Family holds detailed data about a family
  * @category   Lamplight
  * @package    Lamplight_Record
  * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
@@ -37,12 +37,12 @@ namespace Lamplight\Record;
  */
 
 
-class People extends MutableProfile {
+class Family extends MutableProfile {
 
 
     /**
      * @var String        The action used for sending requests via the API
      */
-    protected string $lamplightAction = 'people';
+    protected string $lamplightAction = 'family';
 
 }

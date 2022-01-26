@@ -46,7 +46,7 @@ class PeopleTest extends m\Adapter\Phpunit\MockeryTestCase {
     }
 
 
-    public function test_method_with_ID_is_add () {
+    public function test_method_with_ID_is_update () {
 
         $client = m::mock(Client::class);
 

@@ -20,7 +20,7 @@ namespace Lamplight\Record;
 /**
  *
  *
- * Lamplight\Record\PeopleSummary holds summary data about a person
+ * Lamplight\Record\FamilySummary holds summary data about a person
  * @category   Lamplight
  * @package    Lamplight_Record
  * @copyright  Copyright (c) 2010 - 2022, Lamplight Database Systems Limited, http://www.lamplightdb.co.uk
@@ -29,10 +29,9 @@ namespace Lamplight\Record;
  * @history     1.2 No change
  * @history    1.1 Update to include 'attend work' and 'add referrals' datain module functionality
  * @version     2.0 New version
- * @link       http://www.lamplight-publishing.co.uk/api/phpclient.php  Worked examples and documentation for using the client library   
  *
  *
  */
 
 
-class PeopleSummary extends BaseRecord {}
+class FamilySummary extends BaseRecord {}

@@ -1,16 +1,17 @@
 # Requesting profiles - people or organisation records
 
-You can use the API to request details of published profiles - people or organisations. You need to ensure that they're
-allowed to be published, in system admin, and then that a particular profile is published.
+You can use the API to request details of published profiles - people, organisations, or families. You need to ensure
+that they're allowed to be published, in system admin, and then that a particular profile is published.
 
-The endpoint for organisation type records is `https://lamplight.online/api/orgs/` and for people is
-`https://lamplight.online/api/people/`. The two endpoints behave in the same way.
+The endpoint for organisation type records is `https://lamplight.online/api/orgs/`, for people is
+`https://lamplight.online/api/people/` and for families is `https://lamplight.online/api/family/`. The endpoints behave
+in the same way.
 
 ## Requesting all profiles
 
-The endpoint to request all profiles is `https://lamplight.online/api/orgs/all/role/{role}`
-or `https://lamplight.online/api/people/all/role/{role}`. You will need to include the {role} of the profiles you
-require.
+The endpoint to request all profiles is `https://lamplight.online/api/orgs/all/role/{role}`, 
+`https://lamplight.online/api/people/all/role/{role}`, or `https://lamplight.online/api/family/all/role/{role}`. 
+You will need to include the {role} of the profiles you require.
 
 The default values for these in Lamplight are: `user`, `contact`, `staff`, `funder`, or `org`. Within the actual system
 these defaults may be translated: in the API you need to use the untranslated versions. A single profile must have one
@@ -41,9 +42,9 @@ See below for the data structure for `return=full` requests.
 
 ## Requesting some profiles
 
-The endpoint to request some profiles is `https://lamplight.online/api/orgs/some/role/{role}`
-or `https://lamplight.online/api/people/some/role/{role}`. You will need to include the {role} of the profiles you
-require.
+The endpoint to request some profiles is `https://lamplight.online/api/orgs/some/role/{role}`, 
+`https://lamplight.online/api/people/some/role/{role}` or `https://lamplight.online/api/family/some/role/{role}`.
+You will need to include the {role} of the profiles you require.
 
 You can use the following search parameters for the profiles to list:
 
@@ -78,8 +79,8 @@ have been previously geo-coded in Lamplight for results to be returned.
 
 ## Requesting one profile
 
-The endpoint to request a single profiles is `https://lamplight.online/api/orgs/some/role/{role}/id/{id}`
-or `https://lamplight.online/api/people/some/role/{role}//id/{id}`.  
+The endpoint to request a single profiles is `https://lamplight.online/api/orgs/some/role/{role}/id/{id}`,
+`https://lamplight.online/api/people/some/role/{role}//id/{id}` or `https://lamplight.online/api/family/one/role/{role}/id/{id}`  
 You will need to include the {role} and id of the profile you require.
 
 ```json
@@ -121,9 +122,9 @@ If an organisation is requested, the `first_name` and `surname` fields will be r
 
 ## Creating Profiles
 
-The endpoint to create a new profile for a person is `https://lamplight.online/api/people/add/role/{role}` and an
-organisation is `https://lamplight.online/api/orgs/add/role/{role}`. You will need to ensure that the settings to enable
-creation of profiles is enabled in system admin.
+The endpoint to create a new profile for a person is `https://lamplight.online/api/people/add/role/{role}`, an
+organisation is `https://lamplight.online/api/orgs/add/role/{role}` and a family is `https://lamplight.online/api/family/add/role/{role}`.
+You will need to ensure that the settings to enable creation of the relevant type of profile is enabled in system admin.
 
 Requests must be POSTed.  `{role}` is a required field and must be one of  `user`, `contact`, `staff`, `funder`,
 or `org`.
@@ -144,7 +145,7 @@ or `org`.
 | web | string | Their website address |
 | publishable | bool | Whether to make the profile publishable immediately |
 
-Creating organisations is the same, except the `first_name` and `surname` fields will not be recognised, and the `name`
+Creating organisations and families is the same, except the `first_name` and `surname` fields will not be recognised, and the `name`
 field should be used.
 
 Data must be valid to be accepted. The regex for postcodes used
@@ -168,7 +169,7 @@ main admin menu.
 
 ### Creating profiles using the php client
 
-Create a `\Lamplight\Record\People` or `\Lamplight\Record\Orgs` record, and save it with the Client:
+Create a `\Lamplight\Record\People`, `\Lamplight\Record\Orgs` or `\Lamplight\Record\Family` record, and save it with the Client:
 
 ```php
 
@@ -202,8 +203,9 @@ if ($saved_response->success()) {
 
 ## Altering profiles
 
-Profiles can also be updated, using the  `https://lamplight.online/api/people/update/role/{role}` and
-`https://lamplight.online/api/orgs/update/role/{role}` URLs for people and organisations respectively. You will need to
+Profiles can also be updated, using the  `https://lamplight.online/api/people/update/role/{role}`,
+`https://lamplight.online/api/orgs/update/role/{role}` or `https://lamplight.online/api/family/update/role/{role}` 
+URLs for people, organisations and families respectively. You will need to
 ensure that the settings to enable updating of profiles is enabled in system admin.
 
 You will also need to set the ID of the record you wish to amend. That profile will need to be set to allow updating via
@@ -211,8 +213,8 @@ the API, using the publishing tab in that profile in Lamplight.
 
 ### Altering profiles using the php client
 
-Create a `\Lamplight\Record\People` or `\Lamplight\Record\Orgs` record, ensuring it has an ID, and save it with the
-Client:
+Create a `\Lamplight\Record\People`, `\Lamplight\Record\Orgs` or `\Lamplight\Record\Family` record, ensuring it has 
+an ID, and save it with the `Client`:
 
 ```php
 
@@ -264,11 +266,9 @@ The response is a simple message:
 }
 ```
 
-
 ### Creating relationships using the php client
 
-Create a `\Lamplight\Record\Relationship` record, ensuring it has an ID, and save it with the
-Client:
+Create a `\Lamplight\Record\Relationship` record, ensuring it has an ID, and save it with the Client:
 
 ```php
 $relationship = new \Lamplight\Record\Relationship();
@@ -285,9 +285,6 @@ if ($response->success()) {
 }
 
 ```
-
-
-
 
 ## Contents
 
