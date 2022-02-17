@@ -257,6 +257,7 @@ You will need to POST the following data:
 | id | int | Profile ID of the first profile to link |
 | related_profile_id | int | Profile ID of the second profile to link |
 | relationship_id | int | ID of the relationship, from Lamplight system admin |
+| role | string | Role of the profile |
 
 The response is a simple message:
 
@@ -276,6 +277,62 @@ $relationship->setRelationship($profile_1_id, $profile_2_id, $relationship_id);
 
 $client = new \Lamplight\Client(null, $api_credentials);
 $client->save($relationship);
+
+$response = $this->sut->getDatainResponse();
+if ($response->success()) {
+    // good
+} else {
+    // handle error
+}
+
+```
+
+
+## Adding a profile to a Manual Group or Waiting List
+
+Manual Groups and Waiting Lists in Lamplight are related types of entities - essentially lists of profiles.  You can
+use the API to add a profile to a Manual Group or Waiting List using the `https://lamplight.online/api/people/group/` url.
+
+You will need to enable this in Lamplight settings before you can use the API method.
+
+You will need to POST the following data:
+
+| Param           | Type          | Notes                                                                       |
+|-----------------|---------------|-----------------------------------------------------------------------------|
+| id              | int | Profile ID of the first profile to link                                     |
+| group_id        | int | Lamplight ID of the group or waiting list                                   |
+| role | string | Role of the profile                                                         |
+| date_joined | date | (optional) YYYY-mm-dd HH:ii:ss format date to register when they were added |
+| notes | string | (optional)) Text to be added to their membership of the group               |
+
+The response is a simple message:
+
+```json
+{
+  "msg": "Added to group"
+}
+```
+
+You can't add profiles to auto or merge groups like this.  They are saved searches, so you can only add a profile to 
+one of these by setting their attributes to meet the conditions of the search.  If you try you will receive an error
+message.
+
+
+### Adding to groups or waiting lists using the php client
+
+Create a `\Lamplight\Record\GroupMembership` record, with the profile ID and group ID, and save it using the Client:
+
+```php
+$profile_1 = 934;
+$group_id = 123;
+$notes = 'Added to their membership of the group';
+$date_joined = new \DateTime(); // Relevant for waiting lists
+
+$group_membership = new \Lamplight\Record\GroupMembership();
+$group_membership->setGroupMembership($profile_1, $group_id, $notes, $date_joined);
+
+$client = new \Lamplight\Client(null, $api_credentials);
+$client->save($group_membership);
 
 $response = $this->sut->getDatainResponse();
 if ($response->success()) {

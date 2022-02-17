@@ -67,6 +67,22 @@ include additional information about the error to help you resolve it.
     <dt>1073</dt>
     <dd>To create relationship data use a POST request</dd>
 
+    <dt>1080</dt>
+    <dd>API adding to groups / waiting lists not authorised</dd>
+    <dt>1081</dt>
+    <dd>Incorrect parameters passed to add to a group</dd>
+    <dt>1082</dt>
+    <dd>Group is of the wrong type to add to directly. Only manual groups or waiting lists can be used.</dd>
+    <dt>1083</dt>
+    <dd>Use a POST request to add a person to a group or waiting list</dd>
+    <dt>1084</dt>
+    <dd>The profile could not be added to the group / waiting list</dd>
+    <dt>1085</dt>
+    <dd>The profile could not be found</dd>
+    <dt>1086</dt>
+    <dd>Multiple profiles were found</dd>
+
+
     <dt>9999</dt>
     <dd>Data provided may have been a malicious attack and has not been added. Specifically, POSTed content includes html tags and the request is immediately rejected.</dd>
 </dl>
