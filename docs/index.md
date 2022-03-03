@@ -36,11 +36,13 @@ this repository.
 You should see a json data structure listing the workareas in the system.  If you've got this far then you've got valid
 credentials and enough set up in Lamplight to get a valid response.
 
+To do something useful you'll need to turn on some more permissions in admin > system administration > manage publishing settings.
 
 ## Getting started with the php client:
 
-1. Install using composer (or clone from GitHub).
-2. Save the API credentials you got earlier.  The best way to handle these will depend on your environment, but
+ 1. Install using [composer](https://getcomposer.org) (or clone from GitHub): `composer require lamplight/publishing-php-client`
+
+ 2. Save the API credentials you got earlier.  The best way to handle these will depend on your environment, but
 a simple way is to save them in a file you can include:
 
 **lamplight_credentials.php**:
@@ -52,7 +54,7 @@ define('LAMPLIGHT_PROJECT', '{project}');
 define('LAMPLIGHT_APIKEY', '{key}');
 ```
 
-3. Instantiate a Lamplight\Client and request the workareas:
+ 3. Instantiate a Lamplight\Client and request the workareas:
 
 ```php
 <?php 
