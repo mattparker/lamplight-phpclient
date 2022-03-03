@@ -1,0 +1,25 @@
+{
+  "name": "lamplight/php-client",
+  "description": "A php client for the Lamplight publishing module API",
+  "license": "BSD",
+  "homepage": "https://www.lamplightdb.co.uk",
+  "authors": [
+    {
+      "name": "Matt Parker",
+      "email": "hello@lamplightdb.co.uk"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "guzzlehttp/guzzle": "^7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "mockery/mockery": "^1.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Lamplight\\": "src/Lamplight"
+    }
+  }
+}
