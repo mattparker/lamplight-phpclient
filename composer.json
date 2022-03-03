@@ -1,6 +1,8 @@
 {
-  "name": "lamplight/php-client",
+  "name": "lamplight/publishing-php-client",
   "description": "A php client for the Lamplight publishing module API",
+  "version": "2.0.0",
+  "readme": "README.md",
   "license": "BSD",
   "homepage": "https://www.lamplightdb.co.uk",
   "authors": [
@@ -9,6 +11,11 @@
       "email": "hello@lamplightdb.co.uk"
     }
   ],
+  "support": {
+    "email": "hello@lamplightdb.co.uk",
+    "docs": "https://mattparker.github.io/lamplight-phpclient/",
+    "source": "https://github.com/mattparker/lamplight-phpclient"
+  },
   "require": {
     "php": ">=7.4",
     "guzzlehttp/guzzle": "^7.4"
