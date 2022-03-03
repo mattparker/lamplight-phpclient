@@ -14,10 +14,11 @@ use Lamplight\Client;
 /**
  * Tests that can run against a live server
  *
- * NB network connection is required
+ * NB network connection is required.
+ * Excluded from standard phpunit tests runs but can be enabled if needed by including the `extends TestCase {`
  *
  */
-class GetLiveDataFromSandboxTest extends TestCase {
+class GetLiveDataFromSandboxTest {//} extends TestCase {
 
     protected $sut;
 
