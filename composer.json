@@ -3,7 +3,7 @@
   "description": "A php client for the Lamplight publishing module API",
   "version": "2.0.0",
   "readme": "README.md",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "homepage": "https://www.lamplightdb.co.uk",
   "authors": [
     {
