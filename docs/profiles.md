@@ -79,8 +79,8 @@ have been previously geo-coded in Lamplight for results to be returned.
 
 ## Requesting one profile
 
-The endpoint to request a single profiles is `https://lamplight.online/api/orgs/some/role/{role}/id/{id}`,
-`https://lamplight.online/api/people/some/role/{role}//id/{id}` or `https://lamplight.online/api/family/one/role/{role}/id/{id}`  
+The endpoint to request a single profiles is `https://lamplight.online/api/orgs/one/role/{role}/id/{id}`,
+`https://lamplight.online/api/people/one/role/{role}//id/{id}` or `https://lamplight.online/api/family/one/role/{role}/id/{id}`  
 You will need to include the {role} and id of the profile you require.
 
 ```json
