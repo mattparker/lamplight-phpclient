@@ -305,4 +305,4 @@ The response will be a structure like this:
 
 [Error codes](errors.html)
 
-[Hints and tips](hints.htmls)
+[Hints and tips](hints.html)
