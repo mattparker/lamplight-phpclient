@@ -4,6 +4,8 @@ namespace Lamplight\Datain;
 
 
 use Lamplight\Response as LamplightResponse;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -157,7 +159,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
     /**
      * @return string
      */
-    public function getProtocolVersion () {
+    public function getProtocolVersion () : string {
         return $this->response->getProtocolVersion();
     }
 
@@ -165,14 +167,14 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $version
      * @return LamplightResponse
      */
-    public function withProtocolVersion ($version) {
+    public function withProtocolVersion ($version) : MessageInterface {
         return $this->response->withProtocolVersion($version);
     }
 
     /**
      * @return \string[][]
      */
-    public function getHeaders () {
+    public function getHeaders () : array {
         return $this->response->getHeaders();
     }
 
@@ -180,7 +182,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $name
      * @return bool
      */
-    public function hasHeader ($name) {
+    public function hasHeader ($name) : bool {
         return $this->response->hasHeader($name);
     }
 
@@ -188,7 +190,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $name
      * @return string[]
      */
-    public function getHeader ($name) {
+    public function getHeader ($name) : array {
         return $this->response->getHeader($name);
     }
 
@@ -196,7 +198,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $name
      * @return string
      */
-    public function getHeaderLine ($name) {
+    public function getHeaderLine ($name) : string {
         return $this->response->getHeaderLine($name);
     }
 
@@ -205,7 +207,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $value
      * @return LamplightResponse
      */
-    public function withHeader ($name, $value) {
+    public function withHeader ($name, $value) : MessageInterface {
         return $this->response->withHeader($name, $value);
     }
 
@@ -214,7 +216,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $value
      * @return LamplightResponse
      */
-    public function withAddedHeader ($name, $value) {
+    public function withAddedHeader ($name, $value) : MessageInterface {
         return $this->response->withAddedHeader($name, $value);
     }
 
@@ -222,14 +224,14 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $name
      * @return LamplightResponse
      */
-    public function withoutHeader ($name) {
+    public function withoutHeader ($name) : MessageInterface {
         return $this->response->withoutHeader($name);
     }
 
     /**
      * @return StreamInterface
      */
-    public function getBody () {
+    public function getBody () : StreamInterface {
         return $this->response->getBody();
     }
 
@@ -237,7 +239,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param StreamInterface $body
      * @return LamplightResponse
      */
-    public function withBody (StreamInterface $body) {
+    public function withBody (StreamInterface $body) : MessageInterface {
         return $this->response->withBody($body);
     }
 
@@ -265,7 +267,7 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
     /**
      * @return int
      */
-    public function getStatusCode () {
+    public function getStatusCode () : int {
         return $this->response->getStatusCode();
     }
 
@@ -274,14 +276,14 @@ class ResponseCollection implements \Countable, \Iterator, LamplightResponse {
      * @param $reasonPhrase
      * @return LamplightResponse
      */
-    public function withStatus ($code, $reasonPhrase = '') {
+    public function withStatus ($code, $reasonPhrase = '') : ResponseInterface {
         return $this->response->withStatus($code, $reasonPhrase);
     }
 
     /**
      * @return string
      */
-    public function getReasonPhrase () {
+    public function getReasonPhrase () : string {
         return $this->response->getReasonPhrase();
     }
 }

@@ -75,7 +75,7 @@ class SuccessResponse implements Response {
     /**
      * @return string
      */
-    public function getProtocolVersion () {
+    public function getProtocolVersion () : string {
         return $this->guzzle_response->getProtocolVersion();
     }
 
@@ -83,14 +83,14 @@ class SuccessResponse implements Response {
      * @param $version
      * @return SuccessResponse|ResponseInterface
      */
-    public function withProtocolVersion ($version) {
+    public function withProtocolVersion ($version) : ResponseInterface {
         return $this->guzzle_response->withProtocolVersion($version);
     }
 
     /**
      * @return \string[][]
      */
-    public function getHeaders () {
+    public function getHeaders () : array {
         return $this->guzzle_response->getHeaders();
     }
 
@@ -98,7 +98,7 @@ class SuccessResponse implements Response {
      * @param $name
      * @return bool
      */
-    public function hasHeader ($name) {
+    public function hasHeader ($name) : bool {
         return $this->guzzle_response->hasHeader($name);
     }
 
@@ -106,7 +106,7 @@ class SuccessResponse implements Response {
      * @param $name
      * @return string[]
      */
-    public function getHeader ($name) {
+    public function getHeader ($name) : array {
         return $this->guzzle_response->getHeader($name);
     }
 
@@ -114,7 +114,7 @@ class SuccessResponse implements Response {
      * @param $name
      * @return string
      */
-    public function getHeaderLine ($name) {
+    public function getHeaderLine ($name) : string {
         return $this->guzzle_response->getHeaderLine($name);
     }
 
@@ -123,7 +123,7 @@ class SuccessResponse implements Response {
      * @param $value
      * @return SuccessResponse|ResponseInterface
      */
-    public function withHeader ($name, $value) {
+    public function withHeader ($name, $value) : ResponseInterface {
         return $this->guzzle_response->withHeader($name, $value);
     }
 
@@ -132,7 +132,7 @@ class SuccessResponse implements Response {
      * @param $value
      * @return SuccessResponse|ResponseInterface
      */
-    public function withAddedHeader ($name, $value) {
+    public function withAddedHeader ($name, $value) : ResponseInterface {
         return $this->guzzle_response->withAddedHeader($name, $value);
     }
 
@@ -140,7 +140,7 @@ class SuccessResponse implements Response {
      * @param $name
      * @return SuccessResponse|ResponseInterface
      */
-    public function withoutHeader ($name) {
+    public function withoutHeader ($name) : ResponseInterface {
         return $this->guzzle_response->withoutHeader($name);
     }
 
@@ -148,7 +148,7 @@ class SuccessResponse implements Response {
     /**
      * @return StreamInterface
      */
-    public function getBody () {
+    public function getBody () : StreamInterface {
         return $this->guzzle_response->getBody();
     }
 
@@ -156,14 +156,14 @@ class SuccessResponse implements Response {
      * @param StreamInterface $body
      * @return SuccessResponse|ResponseInterface
      */
-    public function withBody (StreamInterface $body) {
+    public function withBody (StreamInterface $body) : ResponseInterface {
         return $this->guzzle_response->withBody($body);
     }
 
     /**
      * @return int
      */
-    public function getStatusCode () {
+    public function getStatusCode () : int {
         return $this->guzzle_response->getStatusCode();
     }
 
@@ -172,14 +172,14 @@ class SuccessResponse implements Response {
      * @param $reasonPhrase
      * @return SuccessResponse|ResponseInterface
      */
-    public function withStatus ($code, $reasonPhrase = '') {
+    public function withStatus ($code, $reasonPhrase = '') : ResponseInterface {
         return $this->guzzle_response->withStatus($code, $reasonPhrase);
     }
 
     /**
      * @return string
      */
-    public function getReasonPhrase () {
+    public function getReasonPhrase () : string {
         return $this->guzzle_response->getReasonPhrase();
     }
 }

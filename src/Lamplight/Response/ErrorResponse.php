@@ -34,18 +34,18 @@ class ErrorResponse implements Response {
         return false;
     }
 
-    public function getStatusCode () {
+    public function getStatusCode () : int {
         return $this->statusCode;
     }
 
-    public function withStatus ($code, $reasonPhrase = '') {
+    public function withStatus ($code, $reasonPhrase = '') : Response {
         $new = clone $this;
         $new->statusCode = $code;
         $new->reasonPhrase = (string) $reasonPhrase;
         return $new;
     }
 
-    public function getReasonPhrase () {
+    public function getReasonPhrase () : string {
         return $this->reasonPhrase;
     }
 }
