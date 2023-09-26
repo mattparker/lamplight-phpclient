@@ -31,7 +31,7 @@ this repository.
 2. Ensure you have the publishing module enabled (admin > system administration > add or remove modules and projects)
 3. Go to admin > system administration > manage publishing settings
 4. Grab the API key and access parameters from the last tab.
-5. Logout and go to https://lamplight.online/api/workareas/all/format/json?lampid={lampid}&project={project}&key={api key}
+5. Logout and go to https://lamplight.online/api/workarea/all/format/json?lampid={lampid}&project={project}&key={apikey}
 
 You should see a json data structure listing the workareas in the system.  If you've got this far then you've got valid
 credentials and enough set up in Lamplight to get a valid response.

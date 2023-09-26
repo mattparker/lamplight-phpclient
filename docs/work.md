@@ -35,7 +35,7 @@ with any (or none) of the following parameters:
       "start_date": "2022-01-02 14:00:00",
       "end_date": "2022-01-02 15:30:00",
       "workarea": ["Drop-in"],
-      "may_add_atted": true,
+      "may_add_attend": true,
       "num_users_attending": 4,
       "maximum_num_users_allowed": 10
     }
@@ -305,4 +305,4 @@ The response will be a structure like this:
 
 [Error codes](errors.html)
 
-[Hints and tips](hints.html)
+[Hints and tips](hints.htmls)
