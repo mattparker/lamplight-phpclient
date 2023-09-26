@@ -22,7 +22,7 @@ this repository.
 
 [Error codes](errors.html)
 
-[Hints and tips](hints.htmls)
+[Hints and tips](hints.html)
 
 
 ## Getting started:

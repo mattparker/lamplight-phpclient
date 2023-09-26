@@ -168,4 +168,4 @@ If you are building something that involved multiple calls to the \Lamplight\Cli
 
 [Error codes](errors.html)
 
-[Hints and tips](hints.htmls)
+[Hints and tips](hints.html)

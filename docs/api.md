@@ -55,4 +55,4 @@ with the previous version as far as possible, but make use of modern php and sta
 
 [Error codes](errors.html)
 
-[Hints and tips](hints.htmls)
+[Hints and tips](hints.html)
