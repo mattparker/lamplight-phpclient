@@ -179,7 +179,7 @@ class FactoryTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     public function test_error_with_response_and_empty_response () {
 
-        $data = null;
+        $data = '';
         $response = $this->prepareResponse(400, true, $data);
         $this->prepareClient('all', 'workarea', $response);
 

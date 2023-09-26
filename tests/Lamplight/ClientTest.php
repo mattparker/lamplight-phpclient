@@ -27,6 +27,7 @@ class ClientTest extends m\Adapter\Phpunit\MockeryTestCase {
 
     protected function expectGuzzleRequest ($method, $url, $params) {
         $this->mock_guzzle_client->shouldReceive('request')
+            ->once()
             ->with($method, $url, $params)
             ->andReturn($this->mock_response);
     }
