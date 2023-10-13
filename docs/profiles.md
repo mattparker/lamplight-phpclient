@@ -164,6 +164,18 @@ gender=Male
 date_of_birth=1982-04-16
 ```
 
+You can also use field IDs instead of field names, and option IDs instead of the labels, if you prefer, prefixed with 
+'profile_field_' and 'option_' respectively. So instead of the above data you could also submit:
+
+```
+profile_field_123=option_54
+profile_field_456=1982-04-16
+```
+
+where the Gender field has ID 123, the option 'Male' has ID 54, and the date of birth field has ID 456. Field IDs 
+can be viewed in system admin, and you can also download an Excel spreadsheet containing all field settings, which 
+includes field IDs, names, and available options.
+
 To set custom fields to be able to be alterable via the API you will need to go to edit profile custom fields in the
 main admin menu.
 
