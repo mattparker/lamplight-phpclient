@@ -129,30 +129,32 @@ You will need to ensure that the settings to enable creation of the relevant typ
 Requests must be POSTed.  `{role}` is a required field and must be one of  `user`, `contact`, `staff`, `funder`,
 or `org`.
 
-| Param    | Type          | Notes                                                                                                 |
-|----------|---------------|-------------------------------------------------------------------------------------------------------|
-| first_name | string |Their first name. |
-| surname | string | Their surname. |
-| address_line_1 | string | Their address line 1. |
-| address_line_2 | string | Their address line 2. |
-| address_line_3 | string | Their address line 3. |
-| address_line_4 | string | Their address line 4. |
-| address_line_5 | string | Their address line 5. |
-| postcode | string | Their postcode |
-| mobile | string | Their mobile number |
-| phone | string | Their phone number |
-| email | string | Their email |
-| web | string | Their website address |
-| publishable | bool | Whether to make the profile publishable immediately |
+| Param    | Type          | Notes                                                            |
+|----------|---------------|------------------------------------------------------------------|
+| first_name | string | Their first name.                                                |
+| surname | string | Their surname.                                                   |
+| address_line_1 | string | Their address line 1.                                            |
+| address_line_2 | string | Their address line 2.                                            |
+| address_line_3 | string | Their address line 3.                                            |
+| address_line_4 | string | Their address line 4.                                            |
+| address_line_5 | string | Their address line 5.                                            |
+| postcode | string | Their postcode                                                   |
+| mobile | string | Their mobile number                                              |
+| phone | string | Their phone number                                               |
+| email | string | Their email                                                      |
+| web | string | Their website address                                            |
+| publishable | bool | Whether to make the profile publishable immediately              |
+| publish_update | bool | Whether to allow the profile to be updated via the API in future |
 
 Creating organisations and families is the same, except the `first_name` and `surname` fields will not be recognised, and the `name`
 field should be used.
 
-Data must be valid to be accepted. The regex for postcodes used
+Data must be valid to be accepted. The regex for UK postcodes used
 is `/^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}$/`. For UK mobile phones it
 is `/^(0|\+44 |\+44)7[0-9]{1}[\d]{2}[\s]{0,1}[\d]{6}$/` and for international phones
 `/^\+(9[976]\d|8[987530]\d|6[987]\d|5[90]\d|42\d|3[875]\d|2[98654321]\d|9[8543210]|8[6421]|6[6543210]|5[87654321]|4[987654310]|3[9643210]|2[70]|7|1)\d{1,14}$/`
-. Republic of Ireland phones are `/^(0|\+353( )?)8[\d]{1}( )?[\d]{3}( )?[\d]{4}$/`
+. Republic of Ireland phones are `/^(0|\+353( )?)8[\d]{1}( )?[\d]{3}( )?[\d]{4}$/`. Validation depends on the 
+internationalisation settings within your Lamplight system.
 
 You can also add custom fields, where they have been enabled for updating within Lamplight. The format and approach is
 the same as when requesting these fields. The field name should be the text of the field, in all lower case, with
